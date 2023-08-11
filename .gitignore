@@ -1,4 +1,13 @@
-.vscode/settings.json
-.vscode/launch.json
-.vscode/c_cpp_properties.json
-a.out
+.vscode/
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+luna
