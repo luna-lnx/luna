@@ -3,11 +3,12 @@ module install;
 import std.stdio : writefln, writeln;
 import std.getopt;
 import std.process : Redirect, pipeProcess, wait;
-import std.array : join;
+import std.array : join, split;
 import std.format : format;
 import std.file : dirEntries, SpanMode, readText, exists;
 import std.json : JSONValue, parseJSON;
 import std.net.curl : download;
+import std.string : strip;
 
 void installPackage(string[] args)
 {
@@ -73,7 +74,7 @@ void installPackage(string[] args)
         addCommand("cloning repo", "git clone $REPO /etc/luna/src/$NAME -b $TAG");
     }
     commands ~= "cd /etc/luna/src/$NAME/";
-    addCommand("building", "BUILD -j8$(nproc --all)");
+    addCommand("building", "BUILD -j$(nproc --all)");
     addCommand("installing", "INSTALL");
     auto proc = pipeProcess(["sh", "-c", join(commands, " && ")], Redirect.all);
 
@@ -89,6 +90,21 @@ void installPackage(string[] args)
     }
     else
     {
+        commands = [];
+        commands ~= format("source /tmp/%s.lpkg", pname);
+        commands ~= "mv /etc/luna/packages.conf /etc/luna/packages.conf.bak";
+        commands ~= "grep -vi $NAME= /etc/luna/packages.conf.bak > /etc/luna/packages.conf";
+        commands ~= `echo -e "\n$NAME=$TAG" >> /etc/luna/packages.conf`;
+        proc = pipeProcess(["sh", "-c", join(commands, "; ")], Redirect.all);
+        foreach (line; proc.stdout.byLine())
+        {
+            writeln(line);
+        }
+        foreach (line; proc.stderr.byLine())
+        {
+            writeln(line);
+        }
+        wait(proc.pid);
         writefln("luna: installed %s", pname);
     }
 }
