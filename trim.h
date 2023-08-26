@@ -1,1 +1,0 @@
-extern char *trim(char *s);

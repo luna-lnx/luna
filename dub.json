@@ -1,0 +1,9 @@
+{
+	"authors": [
+		"ech0"
+	],
+	"copyright": "Copyright © 2023, ech0",
+	"description": "luna package manager",
+	"license": "ISC",
+	"name": "luna"
+}

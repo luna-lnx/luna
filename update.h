@@ -1,1 +1,0 @@
-extern int update(int argc, char **argv);

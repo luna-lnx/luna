@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# Dependencies
+export DEPENDS="make, clang"
+
+# Git repo
+export REPO="https://git.musl-libc.org/git/musl"
+
+# Git tag/branch
+export TAG="v1.2.4"
+
+# Package name
+# !THIS SHOULD NEVER CHANGE!
+# !MUST BE THE SAME AS THE FILENAME!
+export NAME="musl"
+
+# Package description
+export DESC="an implementation of the standard library for Linux-based systems"
+
+# Commands to build
+BUILD(){
+    ./configure && make
+}
+# Commands to install
+INSTALL(){
+    make install
+}
