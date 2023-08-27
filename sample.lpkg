@@ -25,3 +25,7 @@ BUILD(){
 INSTALL(){
     make install
 }
+# Commands to uninstall
+UNINSTALL(){
+    #... not a clue
+}
