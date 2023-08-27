@@ -5,18 +5,18 @@ import std.getopt;
 import std.process : Redirect, pipeProcess, wait;
 import std.array : join, split;
 import std.format : format;
-import std.file : dirEntries, SpanMode, readText, exists;
+import std.file : dirEntries, SpanMode, readText, exists, remove;
 import std.json : JSONValue, parseJSON;
 import std.net.curl : download;
 import std.string : strip;
 
-struct packageLoc
+struct PackageLoc
 {
     string prefix;
     string name;
 }
 
-packageLoc findPackage(string pname)
+PackageLoc findPackage(string pname)
 {
     foreach (string file; dirEntries("/etc/luna/repos", SpanMode.shallow, true))
     {
@@ -28,7 +28,7 @@ packageLoc findPackage(string pname)
             {
                 if (pkg.str == pname)
                 {
-                    return packageLoc(repo["prefix"].str, name);
+                    return PackageLoc(repo["prefix"].str, name);
                 }
             }
         }
@@ -42,12 +42,15 @@ void addCommand(string action, string cmd, ref string[] commands)
     commands ~= cmd;
 }
 
+void getPackage(PackageLoc loc, string pname)
+{
+    download(format("%s%s/%s/%s.lpkg", loc.prefix, loc.name, pname, pname), format(
+            "/tmp/%s.lpkg", pname));
+}
+
 void installPackage(string[] args)
 {
-    string[] commands;
-
     bool clean = false;
-
     getopt(
         args,
         std.getopt.config.bundling,
@@ -56,13 +59,32 @@ void installPackage(string[] args)
         std.getopt.config.passThrough,
         "c|clean", "removes old files (if available) and clean compiles", &clean,
     );
+    installPackage(args[1], clean);
+
+}
+
+void installPackage(string pname, bool clean)
+{
+    installPackage(pname, clean, false);
+}
+
+void installPackage(string pname, bool clean, bool useCached)
+{
+    string[] commands;
 
     bool found = false;
-    string pname = args[1];
-    packageLoc loc = findPackage(pname);
-    writeln("luna: getting package info");
-    download(format("%s%s/%s/%s.lpkg", loc.prefix, loc.name, pname, pname), format(
-            "/tmp/%s.lpkg", pname));
+
+    if (!useCached)
+    {
+        writeln("luna: getting package info");
+        PackageLoc loc = findPackage(pname);
+        getPackage(loc, pname);
+    }
+    else
+    {
+        writeln("luna: using cached package info");
+    }
+
     commands ~= format("source /tmp/%s.lpkg", pname);
     void configCommands()
     {
@@ -83,6 +105,7 @@ void installPackage(string[] args)
         addCommand("building", "BUILD -j$(nproc --all)", commands);
         addCommand("installing", "INSTALL", commands);
     }
+
     configCommands();
     auto proc = pipeProcess(["sh", "-c", join(commands, " && ")], Redirect.all);
 
@@ -115,4 +138,5 @@ void installPackage(string[] args)
         wait(proc.pid);
         writefln("luna: installed %s", pname);
     }
+    remove(format("/tmp/%s.lpkg", pname));
 }

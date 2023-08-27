@@ -5,6 +5,7 @@ import core.sys.posix.unistd : geteuid;
 
 import update;
 import install;
+import upgrade;
 
 void main(string[] args)
 {
@@ -31,6 +32,16 @@ void main(string[] args)
       if (isSu())
       {
         installPackage(args);
+      }
+      else
+      {
+        throw new Exception("luna: must be superuser");
+      }
+      break;
+    case "U|upgrade":
+      if (isSu())
+      {
+        upgradeSystem(args);
       }
       else
       {
