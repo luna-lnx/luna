@@ -18,7 +18,7 @@ struct packageLoc
 
 packageLoc findPackage(string pname)
 {
-    foreach (string file; dirEntries("/etc/luna/galaxies", SpanMode.shallow, true))
+    foreach (string file; dirEntries("/etc/luna/repos", SpanMode.shallow, true))
     {
         string lines = readText(file);
         JSONValue repo = parseJSON(lines);
