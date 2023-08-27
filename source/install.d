@@ -10,16 +10,41 @@ import std.json : JSONValue, parseJSON;
 import std.net.curl : download;
 import std.string : strip;
 
+struct packageLoc
+{
+    string prefix;
+    string name;
+}
+
+packageLoc findPackage(string pname)
+{
+    foreach (string file; dirEntries("/etc/luna/galaxies", SpanMode.shallow, true))
+    {
+        string lines = readText(file);
+        JSONValue repo = parseJSON(lines);
+        foreach (name, packages; repo["constellations"].object)
+        {
+            foreach (pkg; packages.array)
+            {
+                if (pkg.str == pname)
+                {
+                    return packageLoc(repo["prefix"].str, name);
+                }
+            }
+        }
+    }
+    throw new Exception("luna: couldn't find package " ~ pname);
+}
+
+void addCommand(string action, string cmd, ref string[] commands)
+{
+    commands ~= format("echo 'luna: %s' 1>&2", action);
+    commands ~= cmd;
+}
+
 void installPackage(string[] args)
 {
-
     string[] commands;
-
-    void addCommand(string action, string cmd)
-    {
-        commands ~= format("echo 'luna: %s' 1>&2", action);
-        commands ~= cmd;
-    }
 
     bool clean = false;
 
@@ -34,48 +59,31 @@ void installPackage(string[] args)
 
     bool found = false;
     string pname = args[1];
-    string[] loc;
-    foreach (string file; dirEntries("/etc/luna/galaxies", SpanMode.shallow, true))
-    {
-        string lines = readText(file);
-        JSONValue repo = parseJSON(lines);
-        foreach (name, packages; repo["constellations"].object)
-        {
-            foreach (pkg; packages.array)
-            {
-                if (pkg.str == pname)
-                {
-                    found = true;
-                    loc = [repo["prefix"].str, name];
-                    break;
-                }
-            }
-        }
-        if (found)
-            break;
-    }
-    if (!found)
-        throw new Exception("luna: couldn't find package " ~ pname);
+    packageLoc loc = findPackage(pname);
     writeln("luna: getting package info");
-    download(format("%s%s/%s/%s.lpkg", loc[0], loc[1], pname, pname), format(
+    download(format("%s%s/%s/%s.lpkg", loc.prefix, loc.name, pname, pname), format(
             "/tmp/%s.lpkg", pname));
     commands ~= format("source /tmp/%s.lpkg", pname);
-    if (exists("/etc/luna/src/" ~ pname) && !clean)
+    void configCommands()
     {
-        addCommand("cloning repo", "cd /etc/luna/src/$NAME && git pull origin $TAG");
+        if (exists("/etc/luna/src/" ~ pname) && !clean)
+        {
+            addCommand("cloning repo", "cd /etc/luna/src/$NAME && git pull origin $TAG", commands);
+        }
+        else if (exists("/etc/luna/src/" ~ pname))
+        {
+            addCommand("cleaning old files", "rm -rf /etc/luna/src/$NAME", commands);
+            addCommand("cloning repo", "git clone $REPO /etc/luna/src/$NAME -b $TAG", commands);
+        }
+        else
+        {
+            addCommand("cloning repo", "git clone $REPO /etc/luna/src/$NAME -b $TAG", commands);
+        }
+        commands ~= "cd /etc/luna/src/$NAME/";
+        addCommand("building", "BUILD -j$(nproc --all)", commands);
+        addCommand("installing", "INSTALL", commands);
     }
-    else if (exists("/etc/luna/src/" ~ pname))
-    {
-        addCommand("cleaning old files", "rm -rf /etc/luna/src/$NAME");
-        addCommand("cloning repo", "git clone $REPO /etc/luna/src/$NAME -b $TAG");
-    }
-    else
-    {
-        addCommand("cloning repo", "git clone $REPO /etc/luna/src/$NAME -b $TAG");
-    }
-    commands ~= "cd /etc/luna/src/$NAME/";
-    addCommand("building", "BUILD -j$(nproc --all)");
-    addCommand("installing", "INSTALL");
+    configCommands();
     auto proc = pipeProcess(["sh", "-c", join(commands, " && ")], Redirect.all);
 
     foreach (line; proc.stderr.byLine())
@@ -93,8 +101,8 @@ void installPackage(string[] args)
         commands = [];
         commands ~= format("source /tmp/%s.lpkg", pname);
         commands ~= "mv /etc/luna/packages.conf /etc/luna/packages.conf.bak";
-        commands ~= "grep -vi $NAME= /etc/luna/packages.conf.bak > /etc/luna/packages.conf";
-        commands ~= `echo -e "\n$NAME=$TAG" >> /etc/luna/packages.conf`;
+        commands ~= "grep -vi $NAME= /etc/luna/packages.conf.bak | grep -v '^$' > /etc/luna/packages.conf";
+        commands ~= `echo -e "$NAME=$TAG" >> /etc/luna/packages.conf`;
         proc = pipeProcess(["sh", "-c", join(commands, "; ")], Redirect.all);
         foreach (line; proc.stdout.byLine())
         {

@@ -1,8 +1,7 @@
-import std.stdio;
+import std.stdio : writeln;
 import std.getopt;
-import std;
 
-import core.sys.posix.unistd;
+import core.sys.posix.unistd : geteuid;
 
 import update;
 import install;

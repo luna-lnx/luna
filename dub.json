@@ -5,5 +5,10 @@
 	"copyright": "Copyright © 2023, ech0",
 	"description": "luna package manager",
 	"license": "ISC",
-	"name": "luna"
+	"name": "luna",
+	"dflags": ["-Oz", "-inline", "-release", "-link-defaultlib-shared", "-O3"],
+	"lflags": ["-Wl,--gc-sections", "-Wl,--strip-all", "-flto=full"],
+	"postBuildCommands": [
+		"strip ./luna"
+	]
 }
