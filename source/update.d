@@ -7,7 +7,7 @@ import std.net.curl : download;
 
 void updateRepos(string[] args)
 {
-    if (!exists("/etc/luna/galaxies.conf"))
+    if (!exists("/etc/luna/repos.conf"))
     {
         throw new Exception(
             "luna: cannot access '/etc/luna/repos.conf': no such file or directory");
