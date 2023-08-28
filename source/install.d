@@ -80,7 +80,7 @@ void addCommand(string action, string cmd, ref string[] commands)
 void getPackage(PackageLoc loc, string pname)
 {
     download(format("%s%s/%s/%s.lpkg", loc.prefix, loc.name, pname, pname), format(
-            "/tmp/%s.lpkg", pname));
+            "/tmp/%s_%s.lpkg", loc.name, pname));
 }
 
 void installPackage(string[] args)
@@ -129,10 +129,21 @@ void installPackage(string pname, bool clean, bool useCached, PackageLoc loc)
     }
     else
     {
+        if (canFind(pname, "/"))
+        {
+            string[] splt = split(pname, "/");
+            pname = splt[1];
+            pnameprefix = splt[0];
+        }
+        else
+        {
+            pnameprefix = loc.name;
+        }
         writeln("luna: using cached package info");
+
     }
 
-    commands ~= format("source /tmp/%s.lpkg", pname);
+    commands ~= format("source /tmp/%s_%s.lpkg", loc.name, pname);
     void configCommands()
     {
         if (exists(format("/etc/luna/src/%s_%s", pnameprefix, pname)) && !clean)
@@ -141,14 +152,14 @@ void installPackage(string pname, bool clean, bool useCached, PackageLoc loc)
         }
         else if (exists(format("/etc/luna/src/%s_%s", pnameprefix, pname)))
         {
-            addCommand("cleaning old files", "rm -rf /etc/luna/src/$NAME", commands);
+            addCommand("cleaning old files", format("rm -rf /etc/luna/src/%s_$NAME", pnameprefix), commands);
             addCommand("cloning repo", format("git clone $REPO /etc/luna/src/%s_$NAME -b $TAG", pnameprefix), commands);
         }
         else
         {
             addCommand("cloning repo", format("git clone $REPO /etc/luna/src/%s_$NAME -b $TAG", pnameprefix), commands);
         }
-        commands ~= "cd /etc/luna/src/$NAME/";
+        commands ~= format("cd /etc/luna/src/%s_$NAME/", pnameprefix);
         addCommand("building", "BUILD -j$(nproc --all)", commands);
         addCommand("installing", "INSTALL", commands);
     }
@@ -169,7 +180,7 @@ void installPackage(string pname, bool clean, bool useCached, PackageLoc loc)
     else
     {
         commands = [];
-        commands ~= format("source /tmp/%s.lpkg", pname);
+        commands ~= format("source /tmp/%s_%s.lpkg", loc.name, pname);
         commands ~= "mv /etc/luna/packages.conf /etc/luna/packages.conf.bak";
         commands ~= "grep -vi $NAME= /etc/luna/packages.conf.bak | grep -v '^$' > /etc/luna/packages.conf";
         commands ~= format(`echo -e "%s/$NAME=$TAG" >> /etc/luna/packages.conf`, loc.name);
@@ -185,5 +196,5 @@ void installPackage(string pname, bool clean, bool useCached, PackageLoc loc)
         wait(proc.pid);
         writefln("luna: installed %s", pname);
     }
-    remove(format("/tmp/%s.lpkg", pname));
+    remove(format("/tmp/%s_%s.lpkg", loc.name, pname));
 }
