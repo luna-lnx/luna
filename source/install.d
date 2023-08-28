@@ -9,6 +9,8 @@ import std.file : dirEntries, SpanMode, readText, exists, remove;
 import std.json : JSONValue, parseJSON;
 import std.net.curl : download;
 import std.string : strip;
+import std.typecons : Nullable;
+import std.algorithm : canFind, cmp;
 
 struct PackageLoc
 {
@@ -18,12 +20,45 @@ struct PackageLoc
 
 PackageLoc findPackage(string pname)
 {
+    bool found = false;
+    PackageLoc loc;
     foreach (string file; dirEntries("/etc/luna/repos", SpanMode.shallow, true))
     {
         string lines = readText(file);
         JSONValue repo = parseJSON(lines);
         foreach (name, packages; repo["constellations"].object)
         {
+            foreach (pkg; packages.array)
+            {
+                if (pkg.str == pname)
+                {
+                    if (found)
+                    {
+                        throw new Exception("luna: multiple packages with name" ~ pname);
+                    }
+                    found = true;
+                    loc = PackageLoc(repo["prefix"].str, name);
+                }
+            }
+        }
+    }
+    if (!found)
+    {
+        throw new Exception("luna: couldn't find package " ~ pname);
+    }
+    return loc;
+}
+
+PackageLoc findPackage(string constellation, string pname)
+{
+    foreach (string file; dirEntries("/etc/luna/repos", SpanMode.shallow, true))
+    {
+        string lines = readText(file);
+        JSONValue repo = parseJSON(lines);
+        foreach (name, packages; repo["constellations"].object)
+        {
+            if (cmp(name, constellation) > 0)
+                continue;
             foreach (pkg; packages.array)
             {
                 if (pkg.str == pname)
@@ -65,20 +100,32 @@ void installPackage(string[] args)
 
 void installPackage(string pname, bool clean)
 {
-    installPackage(pname, clean, false);
+    installPackage(pname, clean, false, PackageLoc("", ""));
 }
 
-void installPackage(string pname, bool clean, bool useCached)
+void installPackage(string pname, bool clean, bool useCached, PackageLoc loc)
 {
     string[] commands;
 
     bool found = false;
-
+    string pnameprefix = "";
     if (!useCached)
     {
         writeln("luna: getting package info");
-        PackageLoc loc = findPackage(pname);
-        getPackage(loc, pname);
+        if (canFind(pname, "/"))
+        {
+            string[] splt = split(pname, "/");
+            pname = splt[1];
+            pnameprefix = splt[0];
+            loc = findPackage(pnameprefix, pname);
+            getPackage(loc, pname);
+        }
+        else
+        {
+            loc = findPackage(pname);
+            pnameprefix = loc.name;
+            getPackage(loc, pname);
+        }
     }
     else
     {
@@ -88,18 +135,18 @@ void installPackage(string pname, bool clean, bool useCached)
     commands ~= format("source /tmp/%s.lpkg", pname);
     void configCommands()
     {
-        if (exists("/etc/luna/src/" ~ pname) && !clean)
+        if (exists(format("/etc/luna/src/%s_%s", pnameprefix, pname)) && !clean)
         {
-            addCommand("cloning repo", "cd /etc/luna/src/$NAME && git pull origin $TAG", commands);
+            addCommand("cloning repo", format("cd /etc/luna/src/%s_$NAME && git pull origin $TAG", pnameprefix), commands);
         }
-        else if (exists("/etc/luna/src/" ~ pname))
+        else if (exists(format("/etc/luna/src/%s_%s", pnameprefix, pname)))
         {
             addCommand("cleaning old files", "rm -rf /etc/luna/src/$NAME", commands);
-            addCommand("cloning repo", "git clone $REPO /etc/luna/src/$NAME -b $TAG", commands);
+            addCommand("cloning repo", format("git clone $REPO /etc/luna/src/%s_$NAME -b $TAG", pnameprefix), commands);
         }
         else
         {
-            addCommand("cloning repo", "git clone $REPO /etc/luna/src/$NAME -b $TAG", commands);
+            addCommand("cloning repo", format("git clone $REPO /etc/luna/src/%s_$NAME -b $TAG", pnameprefix), commands);
         }
         commands ~= "cd /etc/luna/src/$NAME/";
         addCommand("building", "BUILD -j$(nproc --all)", commands);
@@ -125,7 +172,7 @@ void installPackage(string pname, bool clean, bool useCached)
         commands ~= format("source /tmp/%s.lpkg", pname);
         commands ~= "mv /etc/luna/packages.conf /etc/luna/packages.conf.bak";
         commands ~= "grep -vi $NAME= /etc/luna/packages.conf.bak | grep -v '^$' > /etc/luna/packages.conf";
-        commands ~= `echo -e "$NAME=$TAG" >> /etc/luna/packages.conf`;
+        commands ~= format(`echo -e "%s/$NAME=$TAG" >> /etc/luna/packages.conf`, loc.name);
         proc = pipeProcess(["sh", "-c", join(commands, "; ")], Redirect.all);
         foreach (line; proc.stdout.byLine())
         {

@@ -14,19 +14,21 @@ void upgradeSystem(string[] args)
     string[] installed = split(strip(readText("/etc/luna/packages.conf")), "\n");
     foreach (line; installed)
     {
-        string[] split = split(line, "=");
+        string[] pkg = split(line, "=");
+        string[] pkgName = split(pkg[0], "/");
         string[] output;
-        getPackage(findPackage(split[0]), split[0]);
+        PackageLoc loc = findPackage(pkgName[0], pkgName[1]);
+        getPackage(loc, pkg[0]);
         auto proc = pipeProcess([
             "sh", "-c",
-            format(`source /tmp/%s.lpkg && echo "$TAG" 1>&2`, split[0])
+            format(`source /tmp/%s.lpkg && echo "$TAG" 1>&2`, pkg[0])
         ], Redirect.all);
         foreach (tline; proc.stderr.byLine)
         {
             output ~= tline.idup;
         }
-        if(cmp(output[0], split[1]) != 0){
-            installPackage(split[0], true, true);
+        if(cmp(output[0], pkg[1]) != 0){
+            installPackage(pkg[0], true, true, loc);
         }
     }
 }
