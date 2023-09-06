@@ -62,6 +62,7 @@ void main(string[] args)
     "i|install", "installs a package", &handler,
     "u|update", "updates repositories", &handler,
     "U|upgrade", "upgrades all packages on the system", &handler,
+    "r|remove", "uninstalls a package", &handler,
     "s|search", "searches for a package", &handler,
     "p|packages", "lists installed packages", &handler
   );
