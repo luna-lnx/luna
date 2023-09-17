@@ -15,3 +15,4 @@ luna
 *.o
 *.obj
 *.lst
+.vscode/
