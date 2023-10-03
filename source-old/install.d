@@ -16,6 +16,7 @@ struct PackageLoc
 {
     string prefix;
     string name;
+    string vers;
 }
 
 PackageLoc findPackage(string pname)
@@ -30,14 +31,15 @@ PackageLoc findPackage(string pname)
         {
             foreach (pkg; packages.array)
             {
-                if (pkg.str == pname)
+                string[] pkgnvers = split(pkg.str, "=");
+                if (pkgnvers[0] == pname)
                 {
                     if (found)
                     {
                         throw new Exception("luna: multiple packages with name" ~ pname);
                     }
                     found = true;
-                    loc = PackageLoc(repo["prefix"].str, name);
+                    loc = PackageLoc(repo["prefix"].str, name, pkgnvers[1]);
                 }
             }
         }
@@ -61,9 +63,10 @@ PackageLoc findPackage(string constellation, string pname)
                 continue;
             foreach (pkg; packages.array)
             {
-                if (pkg.str == pname)
+                string[] pkgnvers = split(pkg.str, "=");
+                if (pkgnvers[0] == pname)
                 {
-                    return PackageLoc(repo["prefix"].str, name);
+                    return PackageLoc(repo["prefix"].str, name, pkgnvers[1]);
                 }
             }
         }
@@ -85,63 +88,41 @@ void getPackage(PackageLoc loc, string pname)
 
 void installPackage(string[] args)
 {
-    bool clean = false;
     getopt(
         args,
         std.getopt.config.bundling,
         std.getopt.config.caseSensitive,
         std.getopt.config.stopOnFirstNonOption,
         std.getopt.config.passThrough,
-        "c|clean", "removes old files (if available) and clean compiles", &clean,
     );
-    installPackage(args[1], clean);
+    installPackage(args[1]);
 
 }
 
-void installPackage(string pname, bool clean)
+void installPackage(string pname)
 {
-    installPackage(pname, clean, false, PackageLoc("", ""));
-}
-
-void installPackage(string pname, bool clean, bool useCached, PackageLoc loc)
-{
+    PackageLoc loc;
     string[] commands;
 
     bool found = false;
     string pnameprefix = "";
-    if (!useCached)
+    
+    writeln("luna: getting package info");
+    if (canFind(pname, "/"))
     {
-        writeln("luna: getting package info");
-        if (canFind(pname, "/"))
-        {
-            string[] splt = split(pname, "/");
-            pname = splt[1];
-            pnameprefix = splt[0];
-            loc = findPackage(pnameprefix, pname);
-            getPackage(loc, pname);
-        }
-        else
-        {
-            loc = findPackage(pname);
-            pnameprefix = loc.name;
-            getPackage(loc, pname);
-        }
+        string[] splt = split(pname, "/");
+        pname = splt[1];
+        pnameprefix = splt[0];
+        loc = findPackage(pnameprefix, pname);
+        getPackage(loc, pname);
     }
     else
     {
-        if (canFind(pname, "/"))
-        {
-            string[] splt = split(pname, "/");
-            pname = splt[1];
-            pnameprefix = splt[0];
-        }
-        else
-        {
-            pnameprefix = loc.name;
-        }
-        writeln("luna: using cached package info");
-
+        loc = findPackage(pname);
+        pnameprefix = loc.name;
+        getPackage(loc, pname);
     }
+    
 
     commands ~= format("source /tmp/%s_%s.lpkg", loc.name, pname);
     void configCommands()

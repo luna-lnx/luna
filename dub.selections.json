@@ -1,5 +1,8 @@
 {
 	"fileVersion": 1,
 	"versions": {
+		"archive": "0.7.1",
+		"toml": "2.0.1",
+		"unit-threaded": "2.0.5"
 	}
 }

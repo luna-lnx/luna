@@ -1,31 +1,20 @@
-#!/bin/sh
+# this package is an example. don't actually use it
 
-# Dependencies
-export DEPENDS="make, clang"
-
-# Git repo
-export REPO="https://git.musl-libc.org/git/musl"
-
-# Git tag/branch
-export TAG="v1.2.4"
-
-# Package name
-# !THIS SHOULD NEVER CHANGE!
-# !MUST BE THE SAME AS THE FILENAME!
-export NAME="musl"
-
-# Package description
-export DESC="an implementation of the standard library for Linux-based systems"
-
-# Commands to build
-BUILD(){
-    ./configure && make
-}
-# Commands to install
-INSTALL(){
-    make install
-}
-# Commands to uninstall
-UNINSTALL(){
-    #... not a clue
-}
+name = "example"
+description = "an example package. nothing of interest."
+tag = "v1.2.4"
+tarball = "https://git.musl-libc.org/cgit/musl/snapshot/musl-1.2.4.tar.gz"
+# TODO: add other formats
+dependencies = [
+    "make"
+]
+build = [
+    "./configure",
+    "make"
+]
+install = [
+    "make install"
+]
+uninstall = [
+    "make uninstall"
+]

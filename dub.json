@@ -4,7 +4,10 @@
 	],
 	"copyright": "Copyright © 2023, ech0",
 	"dependencies": {
+		"archive": "~>0.7.1",
+		"toml": "~>2.0.1"
 	},
+	"name": "luna",
 	"description": "luna package manager",
 	"dflags": [
 		"-Oz",
@@ -21,7 +24,6 @@
 		"-flto=full"
 	],
 	"license": "BSD 3-clause",
-	"name": "luna",
 	"postBuildCommands": [
 		"strip ./luna"
 	]
