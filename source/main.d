@@ -26,7 +26,8 @@ class WhatDoINameThisLogger : Logger
     }
 
     // HACK
-    void logToStderrln(string fmt) @trusted{
+    void logToStderrln(string fmt) @trusted
+    {
         stderr.writefln(fmt);
     }
 
