@@ -1,10 +1,13 @@
 import std.getopt;
 
-import std.stdio : writefln;
+import std.stdio : writefln, stderr;
 import std.format : format;
-import std.logger;
+import std.logger : Logger, LogLevel;
 import std.datetime : Clock;
 import std.file : append;
+import core.sys.posix.unistd : geteuid;
+import std.path : expandTilde;
+import std.file : mkdirRecurse;
 
 import liblpkg;
 import librepo;
@@ -15,19 +18,26 @@ import librepo;
 class WhatDoINameThisLogger : Logger
 {
     string filename;
-    this(LogLevel lv, string filename) @safe
+    this(LogLevel lv, string dirname, string filename) @safe
     {
-        this.filename = filename;
+        mkdirRecurse(dirname);
+        this.filename = dirname ~ filename;
         super(lv);
+    }
+
+    // HACK
+    void logToStderrln(string fmt) @trusted{
+        stderr.writefln(fmt);
     }
 
     override void writeLogMsg(ref LogEntry payload)
     {
-        writefln(payload.msg);
         auto timestamp = payload.timestamp;
-        if (payload.logLevel < 4)
+        // ref: https://github.com/dlang/phobos/blob/a3f22129dd2a134338ca02b79ff0de242d7f016e/std/logger/core.d#L491
+        if (payload.logLevel <= 64)
         {
-            append(this.filename, format("\n%s-%s-%s %s:%s:%s [%s]: %s",
+            writefln(payload.msg);
+            append(this.filename, format("%s-%s-%s %s:%s:%s [%s]: %s\n",
                     timestamp.year,
                     timestamp.month,
                     timestamp.day,
@@ -37,12 +47,14 @@ class WhatDoINameThisLogger : Logger
                     timestamp.second,
 
                     payload.logLevel,
+
                     payload.msg
             ));
         }
         else
         {
-            append(this.filename, format("\n%s-%s-%s %s:%s:%s @ %s:%s():%s [%s]: %s",
+            logToStderrln(format("[%s] %s", payload.logLevel, payload.msg));
+            append(this.filename, format("%s-%s-%s %s:%s:%s @ %s:%s():%s [%s]: %s\n",
                     timestamp.year,
                     timestamp.month,
                     timestamp.day,
@@ -56,6 +68,7 @@ class WhatDoINameThisLogger : Logger
                     payload.line,
 
                     payload.logLevel,
+
                     payload.msg
             ));
         }
@@ -66,6 +79,24 @@ WhatDoINameThisLogger logger;
 
 void main(string[] args)
 {
-    logger = new WhatDoINameThisLogger(LogLevel.all, "test.log");
+    bool isSu()
+    {
+        return geteuid() == 0;
+    }
+
+    if (isSu)
+    {
+        logger = new WhatDoINameThisLogger(LogLevel.all, "/var/log/luna/", format("%s.log", Clock.currTime()
+                .toUnixTime()));
+    }
+    else
+    {
+        logger = new WhatDoINameThisLogger(LogLevel.all, expandTilde("~/.local/state/luna/"), format(
+                "%s.log", Clock.currTime()
+                .toUnixTime()));
+        logger.warning("missing superuser permissions, logging in ~/.local/state/luna instead.");
+    }
+    logger.info("info");
+    logger.error("error");
     locatePackage();
 }
