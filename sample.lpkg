@@ -1,4 +1,4 @@
-# this package is an example. don't actually use it
+# this package is an example. don't actually use it, TOML format
 
 name = "example"
 description = "an example package. nothing of interest."

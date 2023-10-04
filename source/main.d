@@ -10,7 +10,7 @@ import std.path : expandTilde;
 import std.file : mkdirRecurse;
 
 import liblpkg;
-import librepo;
+import liblrepo;
 
 // I would advise keeping this closed.
 // If you have naming suggestions, please make an issue.
@@ -95,9 +95,7 @@ void main(string[] args)
         logger = new WhatDoINameThisLogger(LogLevel.all, expandTilde("~/.local/state/luna/"), format(
                 "%s.log", Clock.currTime()
                 .toUnixTime()));
-        logger.warning("missing superuser permissions, logging in ~/.local/state/luna instead.");
+        logger.warning("missing superuser permissions, writing logs in ~/.local/state/luna instead.");
     }
-    logger.info("info");
-    logger.error("error");
-    locatePackage();
+    logger.info("luna - v0.01");
 }

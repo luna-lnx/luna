@@ -7,9 +7,9 @@ import std.net.curl : get;
 import std.algorithm : map;
 import std.conv : to;
 import std.array : array;
-import std.stdio : writefln;
+import liblrepo;
 
-struct Lpkg
+public struct Lpkg
 {
     string name;
     string description;
@@ -46,4 +46,8 @@ Lpkg parseLpkgFromFile(string file){
 }
 Lpkg parseLpkgFromURL(string url){
     return parseLpkg(to!string(get(url)));
+}
+Lpkg parseLpkgFromURLAndSave(string url, string path){
+    download(url, path);
+    return parseLpkgFromFile(path);
 }
