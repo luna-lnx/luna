@@ -10,16 +10,17 @@ import std.array : array;
 
 private alias Constellations = string[][string];
 
-public struct Repo{
+public struct Repo {
     string prefix;
     Constellations constellations;
 }
-Repo parseRepo(string toml){
+
+Repo parseRepo(string toml) {
     TOMLDocument parsed;
 
     parsed = parseTOML(toml);
     Constellations constellations;
-    for(string key; parsed["constellations"].table.keys;){
+    for (string key; parsed["constellations"].table.keys;) {
         constellations[key] = parsed["constellations"].array.map!(element => element.str).array;
     }
     Repo repo = Repo(
@@ -28,13 +29,16 @@ Repo parseRepo(string toml){
     );
     return repo;
 }
-Repo parseRepoFromFile(string file){
+
+Repo parseRepoFromFile(string file) {
     return parseRepo(readText(file));
 }
-Repo parseRepoFromURL(string url){
+
+Repo parseRepoFromURL(string url) {
     return parseRepo(to!string(get(url)));
 }
-Repo parseRepoFromURLAndSave(string url, string path){
+
+Repo parseRepoFromURLAndSave(string url, string path) {
     download(url, path);
     return parseRepoFromFile(path);
 }

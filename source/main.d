@@ -16,28 +16,23 @@ import liblrepo;
 // I would advise keeping this closed.
 // If you have naming suggestions, please make an issue.
 // TODO: Move to a separate file.
-class WhatDoINameThisLogger : Logger
-{
+class WhatDoINameThisLogger : Logger {
     string filename;
-    this(LogLevel lv, string dirname, string filename) @safe
-    {
+    this(LogLevel lv, string dirname, string filename) @safe {
         mkdirRecurse(dirname);
         this.filename = dirname ~ filename;
         super(lv);
     }
 
     // HACK
-    void logToStderrln(string fmt) @trusted
-    {
+    void logToStderrln(string fmt) @trusted {
         stderr.writefln(fmt);
     }
 
-    override void writeLogMsg(ref LogEntry payload)
-    {
+    override void writeLogMsg(ref LogEntry payload) {
         auto timestamp = payload.timestamp;
         // ref: https://github.com/dlang/phobos/blob/a3f22129dd2a134338ca02b79ff0de242d7f016e/std/logger/core.d#L491
-        if (payload.logLevel <= 64)
-        {
+        if (payload.logLevel <= 64) {
             writefln(payload.msg);
             append(this.filename, format("%s-%s-%s %s:%s:%s [%s]: %s\n",
                     timestamp.year,
@@ -52,9 +47,7 @@ class WhatDoINameThisLogger : Logger
 
                     payload.msg
             ));
-        }
-        else
-        {
+        } else {
             logToStderrln(format("[%s] %s", payload.logLevel, payload.msg));
             append(this.filename, format("%s-%s-%s %s:%s:%s @ %s:%s():%s [%s]: %s\n",
                     timestamp.year,
@@ -79,34 +72,29 @@ class WhatDoINameThisLogger : Logger
 
 __gshared WhatDoINameThisLogger logger;
 
-void handler(string cmd){
+void handler(string cmd) {
 
 }
 
-void main(string[] args)
-{
+void main(string[] args) {
     auto opt = getopt(
         args,
         "u|update", "updates the package repositories", &handler
     );
-    bool isSu()
-    {
+    bool isSu() {
         return geteuid() == 0;
     }
 
-    if (isSu)
-    {
+    if (isSu) {
         logger = new WhatDoINameThisLogger(LogLevel.all, "/var/log/luna/", format("%s.log", Clock.currTime()
                 .toUnixTime()));
-    }
-    else
-    {
+    } else {
         logger = new WhatDoINameThisLogger(LogLevel.all, expandTilde("~/.local/state/luna/"), format(
                 "%s.log", Clock.currTime()
                 .toUnixTime()));
-        logger.warning("missing superuser permissions, writing logs in ~/.local/state/luna instead.");
+        logger.warning(
+            "missing superuser permissions, writing logs in ~/.local/state/luna/ instead.");
     }
-
     logger.info("luna - v0.01");
-    
+
 }

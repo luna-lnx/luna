@@ -16,7 +16,8 @@
 		"-link-defaultlib-shared",
 		"-O3",
 		"-function-sections",
-		"-data-sections"
+		"-data-sections",
+		"-static"
 	],
 	"lflags": [
 		"-Wl,--gc-sections",
