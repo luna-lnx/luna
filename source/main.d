@@ -71,6 +71,7 @@ class WhatDoINameThisLogger : Logger {
 }
 
 __gshared WhatDoINameThisLogger logger;
+immutable string _version = "v0.01";
 
 void handler(string cmd) {
 
@@ -95,6 +96,9 @@ void main(string[] args) {
         logger.warning(
             "missing superuser permissions, writing logs in ~/.local/state/luna/ instead.");
     }
-    logger.info("luna - v0.01");
-
+    if(opt.helpWanted){
+        defaultGetoptPrinter("lunapm - luna linux package manager - " ~ _version, opt.options);
+        return;
+    }
+    logger.info("luna - " ~ _version);
 }
