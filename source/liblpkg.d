@@ -3,11 +3,17 @@ module liblpkg;
 import toml : parseTOML, TOMLDocument;
 
 import std.file : readText;
-import std.net.curl : get;
+import std.net.curl : get, download;
 import std.algorithm : map;
 import std.conv : to;
 import std.array : array;
+import std.algorithm.searching : find;
+import std.logger : sharedLog;
+import std.format : format;
+import std.string : stripRight;
+
 import liblrepo;
+import main;
 
 public struct Lpkg
 {
@@ -23,7 +29,8 @@ public struct Lpkg
     string[] uninstall;
 }
 
-Lpkg parseLpkg(string toml){
+Lpkg parseLpkg(string toml)
+{
     TOMLDocument parsed;
 
     parsed = parseTOML(toml);
@@ -41,13 +48,52 @@ Lpkg parseLpkg(string toml){
     );
     return lpkg;
 }
-Lpkg parseLpkgFromFile(string file){
+
+Lpkg parseLpkgFromFile(string file)
+{
     return parseLpkg(readText(file));
 }
-Lpkg parseLpkgFromURL(string url){
+
+Lpkg parseLpkgFromURL(string url)
+{
     return parseLpkg(to!string(get(url)));
 }
-Lpkg parseLpkgFromURLAndSave(string url, string path){
+
+Lpkg parseLpkgFromURLAndSave(string url, string path)
+{
     download(url, path);
     return parseLpkgFromFile(path);
+}
+
+Lpkg parseLpkgFromRepo(Repo[] repos, string name)
+{
+    Lpkg[] foundPackages = [];
+    foreach (repo; repos)
+    {
+        foreach (c; repo.constellations.byKeyValue())
+        {
+            string cname = c.key;
+            string[] cval = c.value;
+            string[] matchingNames = find(cval, name);
+            if (matchingNames != [])
+            {
+                foundPackages ~= parseLpkgFromURL(format("%s/%s/%s.lpkg", stripRight(repo.prefix, "/"), cname, name));
+            }
+        }
+    }
+    switch (foundPackages.length)
+    {
+    case 0:
+        logger.fatal("no packages found with name" ~ name);
+        break;
+    case 1:
+        return foundPackages[0];
+    default:
+        logger.fatal(format("
+            multiple packages found with name %s - maybe try specifying the repo and constellation?",
+                name
+        ));
+        break;
+    }
+    assert(0);
 }

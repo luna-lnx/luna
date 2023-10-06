@@ -29,12 +29,12 @@ Repo parseRepo(string toml){
     return repo;
 }
 Repo parseRepoFromFile(string file){
-    return parseLpkg(readText(file));
+    return parseRepo(readText(file));
 }
 Repo parseRepoFromURL(string url){
-    return parseLpkg(to!string(get(url)));
+    return parseRepo(to!string(get(url)));
 }
 Repo parseRepoFromURLAndSave(string url, string path){
     download(url, path);
-    return parseLpkgFromFile(path);
+    return parseRepoFromFile(path);
 }

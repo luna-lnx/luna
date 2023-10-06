@@ -2,19 +2,20 @@ import std.getopt;
 
 import std.stdio : writefln, stderr;
 import std.format : format;
-import std.logger : Logger, LogLevel;
+import std.logger : Logger, LogLevel, sharedLog;
 import std.datetime : Clock;
 import std.file : append;
 import core.sys.posix.unistd : geteuid;
 import std.path : expandTilde;
 import std.file : mkdirRecurse;
+import std.getopt : getopt, config, defaultGetoptPrinter;
 
 import liblpkg;
 import liblrepo;
 
 // I would advise keeping this closed.
 // If you have naming suggestions, please make an issue.
-// TODO: Move to a seperate file.
+// TODO: Move to a separate file.
 class WhatDoINameThisLogger : Logger
 {
     string filename;
@@ -76,10 +77,18 @@ class WhatDoINameThisLogger : Logger
     }
 }
 
-WhatDoINameThisLogger logger;
+__gshared WhatDoINameThisLogger logger;
+
+void handler(string cmd){
+
+}
 
 void main(string[] args)
 {
+    auto opt = getopt(
+        args,
+        "u|update", "updates the package repositories", &handler
+    );
     bool isSu()
     {
         return geteuid() == 0;
@@ -97,5 +106,7 @@ void main(string[] args)
                 .toUnixTime()));
         logger.warning("missing superuser permissions, writing logs in ~/.local/state/luna instead.");
     }
+
     logger.info("luna - v0.01");
+    
 }
