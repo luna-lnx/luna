@@ -81,17 +81,17 @@ Lpkg parseLpkgFromRepo(Repo repo, string name) {
         }
     }
     switch (foundPackages.length) {
-    case 0:
-        logger.fatal("no packages found with name" ~ name);
-        break;
-    case 1:
-        return foundPackages[0];
-    default:
-        logger.fatal(format("
+        case 0:
+            logger.fatal("no packages found with name" ~ name);
+            break;
+        case 1:
+            return foundPackages[0];
+        default:
+            logger.fatal(format("
             multiple packages found with name %s - maybe try specifying the repo and constellation?",
-                name
-        ));
-        break;
+                    name
+            ));
+            break;
     }
     assert(0);
 }
