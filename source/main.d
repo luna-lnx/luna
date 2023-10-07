@@ -16,7 +16,6 @@ import liblrepo;
 import update;
 
 // I would advise keeping this closed.
-// If you have naming suggestions, please make an issue.
 // TODO: Move to a separate file.
 class Logger_ : Logger {
     string filename;
@@ -105,7 +104,8 @@ void main(string[] args) {
 
     auto opt = getopt(
         args,
-        "u|update", "updates the package repositories", &handler
+        "u|update", "updates the package repositories", &handler,
+        "s|search", "searches for a package", &handler
     );
     if (opt.helpWanted) {
         defaultGetoptPrinter("lunapm - luna linux package manager - " ~ _version, opt.options);

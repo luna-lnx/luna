@@ -67,18 +67,22 @@ Lpkg parseLpkgFromURLAndSave(string url, string path) {
     download(url, path);
     return parseLpkgFromFile(path);
 }
-
 Lpkg[] parseLpkgFromRepo(Repo repo, string name) {
     Lpkg[] foundPackages = [];
-    foreach (c; repo.constellations.byKeyValue()) {
-        string cname = c.key;
-        string[] cval = c.value;
-        string[] matchingNames = find(cval, name);
-        if (matchingNames != []) {
-            Lpkg tmp = parseLpkgFromURL(format("%s/%s/%s.lpkg", stripRight(repo.prefix, "/"), cname, name));
-            tmp.loc = LpkgLocation(repo, cname);
-            foundPackages ~= tmp;
-        }
+    foreach (c; repo.constellations.byKey()) {
+        foundPackages ~= parseLpkgFromRepoAndConstellation(repo, c, name);
+    }
+    return foundPackages;
+}
+Lpkg[] parseLpkgFromRepoAndConstellation(Repo repo, string constellation, string name) {
+    Lpkg[] foundPackages = [];
+    string cname = constellation;
+    string[] cval = repo.constellations[constellation];
+    string[] matchingNames = find(cval, name);
+    if (matchingNames != []) {
+        Lpkg tmp = parseLpkgFromURL(format("%s/%s/%s.lpkg", stripRight(repo.prefix, "/"), cname, name));
+        tmp.loc = LpkgLocation(repo, cname);
+        foundPackages ~= tmp;
     }
     return foundPackages;
 }
