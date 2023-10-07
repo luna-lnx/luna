@@ -67,6 +67,13 @@ Lpkg parseLpkgFromURLAndSave(string url, string path) {
     download(url, path);
     return parseLpkgFromFile(path);
 }
+Lpkg[] parseLpkgFromRepos(Repo[] repos, string name){
+    Lpkg[] foundPackages = [];
+    foreach(repo; repos){
+        foundPackages ~= parseLpkgFromRepo(repo, name);
+    }
+    return foundPackages;
+}
 Lpkg[] parseLpkgFromRepo(Repo repo, string name) {
     Lpkg[] foundPackages = [];
     foreach (c; repo.constellations.byKey()) {
