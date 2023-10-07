@@ -5,6 +5,7 @@ import std.file : readText, exists, mkdirRecurse;
 import std.string : strip, split;
 import std.path : baseName;
 import std.net.curl : download;
+import std.format : format;
 
 import main;
 
@@ -15,11 +16,12 @@ void updateRepos(string[] args) {
     if(!exists("/var/lib/luna/repos.conf.d/")){
         mkdirRecurse("/var/lib/luna/repos.conf.d/");
     }
-    logger.log("updating repos...");
+    logger.info("updating repos...");
     string[] repos = split(strip(readText("/etc/luna/repos.conf")), "\n");
     for(int i = 0; i < repos.length; ++i){
         string fname = baseName(repos[i]);
-        writefln("updating %s (%s/%s)", fname, i+1, repos.length);
+        logger.info(format("updating %s (%s/%s)", fname, i+1, repos.length));
         download(repos[i], "/var/lib/luna/repos.conf.d/" ~ fname);
     }
+    return;
 }

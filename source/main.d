@@ -13,10 +13,12 @@ import std.getopt : getopt, config, defaultGetoptPrinter;
 import liblpkg;
 import liblrepo;
 
+import update;
+
 // I would advise keeping this closed.
 // If you have naming suggestions, please make an issue.
 // TODO: Move to a separate file.
-class WhatDoINameThisLogger : Logger {
+class Loggy : Logger {
     string filename;
     this(LogLevel lv, string dirname, string filename) @safe {
         mkdirRecurse(dirname);
@@ -70,35 +72,43 @@ class WhatDoINameThisLogger : Logger {
     }
 }
 
-__gshared WhatDoINameThisLogger logger;
+public Loggy logger;
 immutable string _version = "v0.01";
 
-void handler(string cmd) {
-
-}
-
 void main(string[] args) {
-    auto opt = getopt(
-        args,
-        "u|update", "updates the package repositories", &handler
-    );
+    void handler(string cmd) {
+        switch (cmd) {
+            case "u|update":
+                updateRepos(args);
+                break;
+            default:
+                break;
+        }
+    }
+
     bool isSu() {
         return geteuid() == 0;
     }
 
     if (isSu) {
-        logger = new WhatDoINameThisLogger(LogLevel.all, "/var/log/luna/", format("%s.log", Clock.currTime()
+        logger = new Loggy(LogLevel.all, "/var/log/luna/", format("%s.log", Clock.currTime()
                 .toUnixTime()));
     } else {
-        logger = new WhatDoINameThisLogger(LogLevel.all, expandTilde("~/.local/state/luna/"), format(
+        logger = new Loggy(LogLevel.all, expandTilde("~/.local/state/luna/"), format(
                 "%s.log", Clock.currTime()
                 .toUnixTime()));
         logger.warning(
             "missing superuser permissions, writing logs in ~/.local/state/luna/ instead.");
     }
-    if(opt.helpWanted){
+    
+    logger.info("luna - " ~ _version);
+
+    auto opt = getopt(
+        args,
+        "u|update", "updates the package repositories", &handler
+    );
+    if (opt.helpWanted) {
         defaultGetoptPrinter("lunapm - luna linux package manager - " ~ _version, opt.options);
         return;
     }
-    logger.info("luna - " ~ _version);
 }
