@@ -18,7 +18,7 @@ import update;
 // I would advise keeping this closed.
 // If you have naming suggestions, please make an issue.
 // TODO: Move to a separate file.
-class Loggy : Logger {
+class Logger_ : Logger {
     string filename;
     this(LogLevel lv, string dirname, string filename) @safe {
         mkdirRecurse(dirname);
@@ -72,7 +72,7 @@ class Loggy : Logger {
     }
 }
 
-public Loggy logger;
+public Logger_ logger;
 immutable string _version = "v0.01";
 
 void main(string[] args) {
@@ -91,16 +91,16 @@ void main(string[] args) {
     }
 
     if (isSu) {
-        logger = new Loggy(LogLevel.all, "/var/log/luna/", format("%s.log", Clock.currTime()
+        logger = new Logger_(LogLevel.all, "/var/log/luna/", format("%s.log", Clock.currTime()
                 .toUnixTime()));
     } else {
-        logger = new Loggy(LogLevel.all, expandTilde("~/.local/state/luna/"), format(
+        logger = new Logger_(LogLevel.all, expandTilde("~/.local/state/luna/"), format(
                 "%s.log", Clock.currTime()
                 .toUnixTime()));
         logger.warning(
             "missing superuser permissions, writing logs in ~/.local/state/luna/ instead.");
     }
-    
+
     logger.info("luna - " ~ _version);
 
     auto opt = getopt(
