@@ -16,3 +16,4 @@ luna
 *.obj
 *.lst
 .vscode/
+libluna.so

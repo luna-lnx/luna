@@ -14,7 +14,7 @@ import std.string : stripRight;
 import std.typecons : Nullable;
 
 import liblrepo;
-import main;
+import logger;
 
 extern(C) public struct LpkgLocation {
     Repo repository;
