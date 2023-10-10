@@ -26,5 +26,6 @@
 	"license": "BSD 3-clause",
 	"postBuildCommands": [
 		"strip ./luna"
-	]
+	],
+	"targetType": "dynamicLibrary"
 }

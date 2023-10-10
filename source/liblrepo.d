@@ -8,14 +8,14 @@ import std.algorithm : map;
 import std.conv : to;
 import std.array : array;
 
-private alias Constellations = string[][string];
+extern(C) private alias Constellations = string[][string];
 
-public struct Repo {
+extern(C) public struct Repo {
     string prefix;
     Constellations constellations;
 }
 
-Repo parseRepo(string toml) {
+extern(C) Repo parseRepo(string toml) {
     TOMLDocument parsed;
 
     parsed = parseTOML(toml);
@@ -30,15 +30,15 @@ Repo parseRepo(string toml) {
     return repo;
 }
 
-Repo parseRepoFromFile(string file) {
+extern(C) Repo parseRepoFromFile(string file) {
     return parseRepo(readText(file));
 }
 
-Repo parseRepoFromURL(string url) {
+extern(C)Repo parseRepoFromURL(string url) {
     return parseRepo(to!string(get(url)));
 }
 
-Repo parseRepoFromURLAndSave(string url, string path) {
+extern(C) Repo parseRepoFromURLAndSave(string url, string path) {
     download(url, path);
     return parseRepoFromFile(path);
 }

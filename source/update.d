@@ -9,7 +9,7 @@ import std.format : format;
 
 import main;
 
-void updateRepos(string[] args) {
+extern(C) void updateRepos(string[] args) {
     if (!exists("/etc/luna/repos.conf")) {
         logger.fatal("cannot access '/etc/luna/repos.conf': no such file or directory");
     }
