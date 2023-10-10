@@ -7,8 +7,8 @@
 		"archive": "~>0.7.1",
 		"toml": "~>2.0.1"
 	},
-	"name": "luna",
-	"description": "luna package manager",
+	"name": "libluna",
+	"description": "luna package manager library",
 	"dflags": [
 		"-Oz",
 		"-inline",
@@ -25,7 +25,8 @@
 	],
 	"license": "BSD 3-clause",
 	"postBuildCommands": [
-		"strip ./luna"
+		"strip ./libluna.so"
 	],
-	"targetType": "dynamicLibrary"
+	"targetType": "dynamicLibrary",
+	"targetName": "luna"
 }
