@@ -7,8 +7,6 @@
 		"archive": "~>0.7.1",
 		"toml": "~>2.0.1"
 	},
-	"name": "libluna",
-	"description": "luna package manager library",
 	"dflags": [
 		"-Oz",
 		"-inline",
@@ -27,6 +25,22 @@
 	"postBuildCommands": [
 		"strip ./libluna.so"
 	],
-	"targetType": "dynamicLibrary",
-	"targetName": "luna"
+	"name": "luna",
+	"description": "luna package manager",
+	"configurations": [
+		{
+			"name": "luna",
+			"targetType": "executable",
+			"mainSourceFile": "main.d"
+		},
+		{
+			"name": "libluna",
+			"targetType": "dynamicLibrary",
+			"targetName": "luna",
+			"mainSourceFile": "",
+			"excludedSourceFiles": [
+				"main.d"
+			]
+		}
+	]
 }
