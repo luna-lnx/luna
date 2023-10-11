@@ -65,9 +65,9 @@ class Logger_ : Logger {
     }
 }
 
-public Logger_ logger;
+extern(C) public Logger_ logger;
 
-Logger_ getLogger() {
+extern(C) Logger_ getLogger() {
     if (!is(typeof(logger))) {
         if (isSu) {
             logger = new Logger_(LogLevel.all, "/var/log/luna/", format("%s.log", Clock.currTime()
