@@ -31,7 +31,7 @@
 		{
 			"name": "luna",
 			"targetType": "executable",
-			"mainSourceFile": "main.d"
+			"mainSourceFile": "source/main.d"
 		},
 		{
 			"name": "libluna",
@@ -39,7 +39,7 @@
 			"targetName": "luna",
 			"mainSourceFile": "",
 			"excludedSourceFiles": [
-				"main.d"
+				"source/main.d"
 			]
 		}
 	]
