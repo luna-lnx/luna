@@ -39,7 +39,6 @@ void main(string[] args) {
         logger.warn(
             "missing superuser permissions, writing logs in ~/.local/state/luna/ instead.");
     }
-
     logger.info("luna - " ~ _version);
 
     auto opt = getopt(
