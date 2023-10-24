@@ -2,7 +2,6 @@ import std.getopt;
 
 import std.stdio : writefln, stderr;
 import std.format : format;
-import std.logger : Logger, LogLevel, sharedLog;
 import std.datetime : Clock;
 import std.file : append;
 import core.sys.posix.unistd : geteuid;
@@ -15,6 +14,7 @@ import liblrepo;
 
 import update;
 import logger;
+import utils;
 
 immutable string _version = "v0.01";
 
@@ -29,14 +29,18 @@ void main(string[] args) {
         }
     }
 
-    bool isSu() {
-        return geteuid() == 0;
+    if (isSu) {
+        logger.setFilename("/var/log/luna/" ~ format("%s.log", Clock.currTime()
+                .toUnixTime()));
+    } else {
+        logger.setFilename(expandTilde("~/.local/state/luna/") ~ format(
+                "%s.log", Clock.currTime()
+                .toUnixTime()));
+        logger.warn(
+            "missing superuser permissions, writing logs in ~/.local/state/luna/ instead.");
     }
 
-    getLogger.warning(
-            "missing superuser permissions, writing logs in ~/.local/state/luna/ instead.");
-
-    getLogger.info("luna - " ~ _version);
+    logger.info("luna - " ~ _version);
 
     auto opt = getopt(
         args,

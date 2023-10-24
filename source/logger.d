@@ -4,13 +4,15 @@ import std.logger : Logger, LogLevel;
 import std.format : format;
 import std.stdio : writefln, stderr;
 import std.file : mkdirRecurse;
-import std.datetime : Clock;
+import std.datetime : Clock, SysTime;
 import std.file : append;
 import std.path : expandTilde;
 
 import utils;
 
-
+/*
+Here for reference.
+TODO: remove
 class Logger_ : Logger {
     string filename;
     this(LogLevel lv, string dirname, string filename) @safe {
@@ -64,8 +66,71 @@ class Logger_ : Logger {
         }
     }
 }
+*/
+// A little bit of help from https://wiki.dlang.org/Logging_mechanisms
 
-extern(C) public Logger_ logger;
+public string filename;
+
+template log(LogLevel level) {
+    void log(Args...)(
+        Args args,
+        string fn = __PRETTY_FUNCTION__,
+        string file = __FILE__,
+        int line = __LINE__
+    ) {
+        SysTime timestamp = Clock.currTime();
+        if (level <= 64) {
+            writefln(args);
+            if (filename != "") {
+                append(filename, format("%s-%s-%s %s:%s:%s [%s]: %s\n",
+                        timestamp.year,
+                        timestamp.month,
+                        timestamp.day,
+
+                        timestamp.hour,
+                        timestamp.minute,
+                        timestamp.second,
+
+                        level,
+
+                        args
+                ));
+            }
+        } else {
+            stderr.writeln(format("[%s] %s", level, args));
+            if (filename != "") {
+                append(filename, format("%s-%s-%s %s:%s:%s @ %s:%s():%s [%s]: %s\n",
+                        timestamp.year,
+                        timestamp.month,
+                        timestamp.day,
+
+                        timestamp.hour,
+                        timestamp.minute,
+                        timestamp.second,
+
+                        file,
+                        fn,
+                        line,
+
+                        level,
+
+                        args
+                ));
+            }
+        }
+    }
+}
+
+public alias info = log!(LogLevel.info);
+public alias warn = log!(LogLevel.warning);
+public alias error = log!(LogLevel.error);
+public alias fatal = log!(LogLevel.fatal);
+
+void setFilename(string fn){
+    filename = fn;
+}
+
+/*extern(C) public Logger_ logger;
 
 extern(C) Logger_ getLogger() {
     if (!is(typeof(logger))) {
@@ -81,4 +146,4 @@ extern(C) Logger_ getLogger() {
         }
     }
     return logger;
-}
+}*/
