@@ -9,19 +9,24 @@ import std.format : format;
 
 import logger;
 
-extern(C) void updateRepos(string[] args) {
-    if (!exists("/etc/luna/repos.conf")) {
+extern (C) void updateRepos(string[] args) {
+    /*
+    moved to doctor
+    if (!exists("/etc/luna/repos.conf"))
+    {
         logger.fatal("cannot access '/etc/luna/repos.conf': no such file or directory");
     }
-    if(!exists("/var/lib/luna/repos.conf.d/")){
+    if (!exists("/var/lib/luna/repos.conf.d/"))
+    {
         mkdirRecurse("/var/lib/luna/repos.conf.d/");
-    }
+    }*/
     logger.info("updating repos...");
     string[] repos = split(strip(readText("/etc/luna/repos.conf")), "\n");
-    for(int i = 0; i < repos.length; ++i){
+    for (int i = 0; i < repos.length; ++i) {
         string fname = baseName(repos[i]);
-        logger.info(format("updating %s (%s/%s)", fname, i+1, repos.length));
+        logger.info(format("updating %s (%s/%s)", fname, i + 1, repos.length));
         download(repos[i], "/var/lib/luna/repos.conf.d/" ~ fname);
     }
+    logger.info("update: successfully updated repos");
     return;
 }

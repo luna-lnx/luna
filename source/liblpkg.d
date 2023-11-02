@@ -16,12 +16,12 @@ import std.typecons : Nullable;
 import liblrepo;
 import logger;
 
-extern(C) public struct LpkgLocation {
+extern (C) public struct LpkgLocation {
     Repo repository;
     string constellation;
 }
 
-extern(C) public struct Lpkg {
+extern (C) public struct Lpkg {
     string name;
     string description;
     string tag;
@@ -36,7 +36,7 @@ extern(C) public struct Lpkg {
     Nullable!LpkgLocation loc;
 }
 
-extern(C) Lpkg parseLpkg(string toml) {
+extern (C) Lpkg parseLpkg(string toml) {
     TOMLDocument parsed;
 
     parsed = parseTOML(toml);
@@ -55,33 +55,36 @@ extern(C) Lpkg parseLpkg(string toml) {
     return lpkg;
 }
 
-extern(C) Lpkg parseLpkgFromFile(string file) {
+extern (C) Lpkg parseLpkgFromFile(string file) {
     return parseLpkg(readText(file));
 }
 
-extern(C) Lpkg parseLpkgFromURL(string url) {
+extern (C) Lpkg parseLpkgFromURL(string url) {
     return parseLpkg(to!string(get(url)));
 }
 
-extern(C) Lpkg parseLpkgFromURLAndSave(string url, string path) {
+extern (C) Lpkg parseLpkgFromURLAndSave(string url, string path) {
     download(url, path);
     return parseLpkgFromFile(path);
 }
-extern(C) Lpkg[] parseLpkgFromRepos(Repo[] repos, string name){
+
+extern (C) Lpkg[] parseLpkgFromRepos(Repo[] repos, string name) {
     Lpkg[] foundPackages = [];
-    foreach(repo; repos){
+    foreach (repo; repos) {
         foundPackages ~= parseLpkgFromRepo(repo, name);
     }
     return foundPackages;
 }
-extern(C) Lpkg[] parseLpkgFromRepo(Repo repo, string name) {
+
+extern (C) Lpkg[] parseLpkgFromRepo(Repo repo, string name) {
     Lpkg[] foundPackages = [];
     foreach (c; repo.constellations.byKey()) {
         foundPackages ~= parseLpkgFromRepoAndConstellation(repo, c, name);
     }
     return foundPackages;
 }
-extern(C) Lpkg[] parseLpkgFromRepoAndConstellation(Repo repo, string constellation, string name) {
+
+extern (C) Lpkg[] parseLpkgFromRepoAndConstellation(Repo repo, string constellation, string name) {
     Lpkg[] foundPackages = [];
     string cname = constellation;
     string[] cval = repo.constellations[constellation];
