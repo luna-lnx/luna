@@ -62,7 +62,7 @@ extern (C) template log(LogLevel level) {
             if (level >= LogLevel.critical) {
                 stderr.writeln(format("[fatal] %s", args));
                 stderr.writeln(
-                    "!! a fatal exception occurred - please run 'luna --doctor' before making an issue");
+                    "!! a fatal exception occurred. if you believe this is not user error, please run 'luna --doctor' before making an issue");
                 level > LogLevel.critical ? throw new Exception(format("[fatal] %s", args)) : exit(
                     1);
                 exit(1);
