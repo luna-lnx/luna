@@ -11,5 +11,6 @@ void installPackage(string[] args) {
     if (packages.length != 1)
         logger.fatal(format("%s packages with name %s", packages.length == 0 ? "found no" : "found too many", args[1]));
     Lpkg pkg = packages[0];
-    logger.info(format("installing %s::%s", pkg.name, pkg.tag));
+    logger.info(format("installing %s/%s::%s", pkg.loc.get.constellation, pkg.name, pkg
+            .tag));
 }
