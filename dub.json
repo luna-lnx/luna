@@ -19,9 +19,6 @@
 		"-flto=full"
 	],
 	"license": "BSD 3-clause",
-	"postBuildCommands": [
-		"strip ./libluna.so"
-	],
 	"name": "luna",
 	"description": "luna package manager",
 	"configurations": [
