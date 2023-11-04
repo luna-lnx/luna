@@ -8,7 +8,9 @@ import logger;
 import loader;
 import core.thread.osthread : Thread;
 import std.net.curl : download;
-
+import archive.targz : TarGzArchive;
+import std.file : read, write, exists, mkdirRecurse;
+import std.path : dirName;
 void installPackage(string[] args) {
     Lpkg[] packages = parseLpkgFromRepos(parseReposFromDir("/var/lib/luna/repos.conf.d/"), args[1]);
     if (packages.length != 1)
@@ -20,7 +22,19 @@ void installPackage(string[] args) {
     logger.info(format("installing %s/%s::%s", pkg.loc.get.constellation, pkg.name, pkg
             .tag));
     string url = format(pkg.tarball, pkg.tag);
+
     new Loader(format("downloading %s", baseName(url)), {
-        download(url, "/tmp/" ~ baseName(url));
+        download(url, format("/usr/src/luna/%s", baseName(url)));
+    }).showLoader();
+    new Loader(format("extracting %s", baseName(url)), {
+        auto archive = new TarGzArchive(read(format("/usr/src/luna/%s", baseName(url))));
+        foreach(file; archive.files){
+            string fullName = "/usr/src/luna/" ~ file.path;
+            string parentDir = dirName(fullName);
+            if(!exists(parentDir)){
+                mkdirRecurse(parentDir);
+            }
+            write(fullName, file.data);
+        }
     }).showLoader();
 }

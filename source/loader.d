@@ -1,9 +1,10 @@
 module loader;
 
-import std.stdio : writef, writefln, stdout;
+import std.stdio : writef, writefln, writeln, stdout;
 import core.thread.osthread : Thread;
 import core.time : dur;
 import core.atomic : atomicStore;
+
 private immutable string[] icons = ["/", "|", "\\", "-"];
 
 class Loader {
@@ -16,7 +17,7 @@ class Loader {
     }
 
     void showLoader() {
-        new Thread({
+        Thread t = new Thread({
             while (!stop) {
                 foreach (icon; icons) {
                     writef("\r%s %s", icon, message);
@@ -29,6 +30,7 @@ class Loader {
         }).start();
         this.action();
         this.stopLoader();
+        t.join();
         return;
     }
 
