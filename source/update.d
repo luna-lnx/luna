@@ -10,16 +10,12 @@ import std.format : format;
 import logger;
 
 extern (C) void updateRepos(string[] args) {
-    /*
-    moved to doctor
-    if (!exists("/etc/luna/repos.conf"))
-    {
-        logger.fatal("cannot access '/etc/luna/repos.conf': no such file or directory");
+    if (!exists("/etc/luna/repos.conf")) {
+        logger.fatal("repos.conf missing");
     }
-    if (!exists("/var/lib/luna/repos.conf.d/"))
-    {
+    if (!exists("/var/lib/luna/repos.conf.d/")) {
         mkdirRecurse("/var/lib/luna/repos.conf.d/");
-    }*/
+    }
     logger.info("updating repos...");
     string[] repos = split(strip(readText("/etc/luna/repos.conf")), "\n");
     for (int i = 0; i < repos.length; ++i) {
