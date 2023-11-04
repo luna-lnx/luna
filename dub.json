@@ -9,8 +9,6 @@
 	},
 	"dflags": [
 		"-Oz",
-		"-inline",
-		"-release",
 		"-link-defaultlib-shared",
 		"-function-sections",
 		"-data-sections"
