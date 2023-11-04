@@ -1,6 +1,6 @@
 module logger;
 
-import std.experimental.logger : LogLevel;
+import std.logger : LogLevel;
 import std.format : format;
 import std.stdio : writefln, stderr;
 import std.file : mkdirRecurse;
