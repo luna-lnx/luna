@@ -12,7 +12,6 @@
 		"-inline",
 		"-release",
 		"-link-defaultlib-shared",
-		"-O3",
 		"-function-sections",
 		"-data-sections"
 	],
