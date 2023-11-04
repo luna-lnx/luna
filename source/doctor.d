@@ -5,6 +5,7 @@ import std.path : expandTilde;
 import std.net.curl : download;
 import std.format : format;
 import logger;
+import update;
 
 void runDoctor() {
     int problems = 0;
@@ -21,8 +22,9 @@ void runDoctor() {
     }
     if (!exists("/etc/luna/repos.conf")) {
         ++problems;
-        logger.info("downloading default repos.conf");
+        logger.info("downloading default repos.conf and updating");
         download("https://raw.githubusercontent.com/luna-lnx/repo/main/repos.conf.defaults", "/etc/luna/repos.conf");
     }
+    updateRepos([]);
     info(format("doctor: fixed %s issues", problems));
 }

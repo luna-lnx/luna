@@ -90,7 +90,7 @@ extern (C) Lpkg[] parseLpkgFromRepoAndConstellation(Repo repo, string constellat
     string[] cval = repo.constellations[constellation];
     string[] matchingNames = find(cval, name);
     if (matchingNames != []) {
-        Lpkg tmp = parseLpkgFromURL(format("%s/%s/%s.lpkg", stripRight(repo.prefix, "/"), cname, name));
+        Lpkg tmp = parseLpkgFromURL(format("%s/%s/%s/%s.lpkg", stripRight(repo.prefix, "/"), cname, name, name));
         tmp.loc = LpkgLocation(repo, cname);
         foundPackages ~= tmp;
     }

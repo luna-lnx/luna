@@ -14,6 +14,7 @@ import liblrepo;
 
 import update;
 import doctor;
+import install;
 import logger;
 import utils;
 
@@ -26,18 +27,13 @@ void main(string[] args) {
     void handler(string cmd) {
         switch (cmd) {
             case "u|update":
-                if (isSu) {
-                    updateRepos(args);
-                } else {
-                    logger.fatal("update requires superuser permissions");
-                }
+                updateRepos(args);
                 break;
             case "d|doctor":
-                if (isSu) {
-                    runDoctor();
-                } else {
-                    logger.fatal("update requires superuser permissions");
-                }
+                runDoctor();
+                break;
+            case "i|install":
+                installPackage(args);
                 break;
             default:
                 logger.fatal("how did we get here?");
@@ -51,8 +47,9 @@ void main(string[] args) {
     auto opt = getopt(
         args,
         "u|update", "updates the package repositories", &handler,
+        "i|install", "installs a package", &handler,
         "d|doctor", "fixes any potential issues", &handler,
-        config.bundling,
+        config.noBundling,
         config.stopOnFirstNonOption,
         config.passThrough
     );
