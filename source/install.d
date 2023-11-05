@@ -34,7 +34,8 @@ void installPackage(string[] args) {
         auto archive = new TarGzArchive(read(format("/usr/src/luna/%s", baseName(url))));
         foreach (file; archive.files) {
             // TODO: make this more reliable. just a best effort to get things working
-            if (canFind(file.path.split("/")[0], pkg.name) && !srcDir)
+            string[] splitPath = file.path.split("/");
+            if (canFind(splitPath[0], pkg.name) && !srcDir && splitPath.length > 1)
                 srcDir = file.path.split("/")[0];
             string fullName = "/usr/src/luna/" ~ file.path;
             string parentDir = dirName(fullName);
