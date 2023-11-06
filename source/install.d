@@ -70,7 +70,7 @@ void installPackage(string[] args, bool shouldPackage) {
     new Loader(format("compiling %s", pkg.name), (ref Loader loader) {
         foreach (command; pkg.make) {
             string formattedCmd = command;
-            formattedCmd = command.replace("$MKFLAGS", "-j8");
+            formattedCmd = command.replace("$MKFLAGS", format("\"%s\"", main.cfg.mkflags));
             formattedCmd = command.replace("$CC", format("\"%s\"", main.cfg.cc));
             formattedCmd = command.replace("$CXX", format("\"%s\"", main.cfg.cxx));
             formattedCmd = command.replace("$CFLAGS", format("\"%s\"", main.cfg.cflags));
