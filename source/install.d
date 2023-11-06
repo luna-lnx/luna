@@ -9,6 +9,8 @@ import std.file : read, write, exists, mkdirRecurse;
 import std.path : dirName;
 import std.array : split;
 import std.algorithm.searching : canFind;
+import std.process : environment, executeShell, Config;
+import std.conv : to;
 
 import liblpkg;
 import liblrepo;
@@ -45,5 +47,10 @@ void installPackage(string[] args) {
             write(fullName, file.data);
         }
     }).showLoader();
-    new Loader(format("installing %s", pkg.name), {});
+    new Loader(format("compiling %s", pkg.name), {
+        foreach(command; pkg.make){
+            auto res = executeShell(command, null, Config.none, size_t.max, format("/usr/src/luna/%s", srcDir));
+            logger.info(to!string(res[1]));
+        }
+    }).showLoader();
 }
