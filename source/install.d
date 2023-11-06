@@ -31,10 +31,10 @@ void installPackage(string[] args) {
             .tag));
     string url = format(pkg.tarball, pkg.tag);
     string srcDir;
-    new Loader(format("downloading %s", baseName(url)), {
+    new Loader(format("downloading %s", baseName(url)), (ref Loader loader) {
         download(url, format("/usr/src/luna/%s", baseName(url)));
     }).showLoader();
-    new Loader(format("extracting %s", baseName(url)), {
+    new Loader(format("extracting %s", baseName(url)), (ref Loader loader) {
         auto archive = new TarGzArchive(read(format("/usr/src/luna/%s", baseName(url))));
         foreach (file; archive.files) {
             // TODO: make this more reliable. just a best effort to get things working
@@ -49,29 +49,30 @@ void installPackage(string[] args) {
             write(fullName, file.data);
         }
     }).showLoader();
-    new Loader(format("compiling %s", pkg.name), {
+    new Loader(format("compiling %s", pkg.name), (ref Loader loader) {
         foreach (command; pkg.make) {
-            string formattedName = command;
+            string formattedCmd = command;
             if (canFind(command, "$MKFLAGS")) {
-                formattedName = command.replace("$MKFLAGS", "-j8");
-                logger.info("added flags!");
+                formattedCmd = command.replace("$MKFLAGS", "-j8");
             }
-            auto res = executeShell(formattedName, null, Config.none, size_t.max, format("/usr/src/luna/%s", srcDir));
+            loader.setMessage(format("compiling %s (%s)", pkg.name, formattedCmd));
+            auto res = executeShell(formattedCmd, null, Config.none, size_t.max, format("/usr/src/luna/%s", srcDir));
             if (res[0] != 0) {
                 logger.fatal(format("compile task '%s' failed with error code %s because of:\n%s", command, res[0], res[1]));
             }
         }
     }).showLoader();
-    new Loader(format("installing %s", pkg.name), {
+    new Loader(format("installing %s", pkg.name), (ref Loader loader) {
         string cacheDir;
         foreach (command; pkg.install) {
-            string formattedName = command;
+            string formattedCmd = command;
             if (canFind(command, "$DEST")) {
                 cacheDir = format("/tmp/luna/installcache/%s", pkg.name);
                 mkdirRecurse(cacheDir);
-                formattedName = command.replace("$DEST", cacheDir);
+                formattedCmd = command.replace("$DEST", cacheDir);
             }
-            auto res = executeShell(formattedName, null, Config.none, size_t.max, format(
+            loader.setMessage(format("installing %s (%s)", pkg.name, formattedCmd));
+            auto res = executeShell(formattedCmd, null, Config.none, size_t.max, format(
                 "/usr/src/luna/%s", srcDir));
             if (res[0] != 0) {
                 logger.fatal(format("install task '%s' failed with error code %s because of:\n%s", command, res[0], res[1]));
