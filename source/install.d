@@ -51,7 +51,12 @@ void installPackage(string[] args) {
     }).showLoader();
     new Loader(format("compiling %s", pkg.name), {
         foreach (command; pkg.make) {
-            auto res = executeShell(command, null, Config.none, size_t.max, format("/usr/src/luna/%s", srcDir));
+            string formattedName = command;
+            if (canFind(command, "$MKFLAGS")) {
+                formattedName = command.replace("$MKFLAGS", "-j8");
+                logger.info("added flags!");
+            }
+            auto res = executeShell(formattedName, null, Config.none, size_t.max, format("/usr/src/luna/%s", srcDir));
             if (res[0] != 0) {
                 logger.fatal(format("compile task '%s' failed with error code %s because of:\n%s", command, res[0], res[1]));
             }
@@ -60,13 +65,13 @@ void installPackage(string[] args) {
     new Loader(format("installing %s", pkg.name), {
         string cacheDir;
         foreach (command; pkg.install) {
-            string formattedName;
+            string formattedName = command;
             if (canFind(command, "$DEST")) {
                 cacheDir = format("/tmp/luna/installcache/%s", pkg.name);
                 mkdirRecurse(cacheDir);
                 formattedName = command.replace("$DEST", cacheDir);
             }
-            auto res = executeShell(formattedName ? formattedName : command, null, Config.none, size_t.max, format(
+            auto res = executeShell(formattedName, null, Config.none, size_t.max, format(
                 "/usr/src/luna/%s", srcDir));
             if (res[0] != 0) {
                 logger.fatal(format("install task '%s' failed with error code %s because of:\n%s", command, res[0], res[1]));
