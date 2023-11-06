@@ -48,9 +48,19 @@ void installPackage(string[] args) {
         }
     }).showLoader();
     new Loader(format("compiling %s", pkg.name), {
-        foreach(command; pkg.make){
+        foreach (command; pkg.make) {
             auto res = executeShell(command, null, Config.none, size_t.max, format("/usr/src/luna/%s", srcDir));
-            logger.info(to!string(res[1]));
+            if (res[0] != 0) {
+                logger.fatal(format("compile task '%s' failed with error code %s because of:\n%s", command, res[0], res[1]));
+            }
+        }
+    }).showLoader();
+    new Loader(format("installing %s", pkg.name),  {
+        foreach (command; pkg.install) {
+            auto res = executeShell(command, null, Config.none, size_t.max, format("/usr/src/luna/%s", srcDir));
+                if (res[0] != 0) {
+                    logger.fatal(format("install task '%s' failed with error code %s because of:\n%s", command, res[0], res[1]));
+                }
         }
     }).showLoader();
 }
