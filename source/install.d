@@ -37,6 +37,7 @@ void installPackage(string[] args) {
     new Loader(format("extracting %s", baseName(url)), (ref Loader loader) {
         auto archive = new TarGzArchive(read(format("/usr/src/luna/%s", baseName(url))));
         foreach (file; archive.files) {
+            loader.setMessage(format("extracting %s (%s)", pkg.name, baseName(file.path)));
             // TODO: make this more reliable. just a best effort to get things working
             string[] splitPath = file.path.split("/");
             if (canFind(splitPath[0], pkg.name) && !srcDir && splitPath.length > 1)
