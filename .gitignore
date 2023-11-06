@@ -17,3 +17,4 @@ luna
 *.lst
 .vscode/
 libluna.so
+*.lbin

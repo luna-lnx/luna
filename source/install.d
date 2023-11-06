@@ -5,13 +5,13 @@ import std.path : baseName;
 import core.thread.osthread : Thread;
 import std.net.curl : download;
 import archive.targz : TarGzArchive;
-import std.file : read, write, exists, mkdirRecurse, dirEntries, SpanMode, isFile, write, copy, PreserveAttributes;
-import std.path : dirName;
+import std.file : read, write, exists, mkdirRecurse, dirEntries, SpanMode, isFile, write, copy, PreserveAttributes, setAttributes;
+import std.path : dirName, extension;
 import std.array : split, replace, join;
 import std.algorithm.searching : canFind;
 import std.algorithm : map;
 import std.process : environment, executeShell, Config;
-import std.conv : to;
+import std.conv : to, octal;
 import std.typecons : Yes;
 
 import main;
@@ -22,6 +22,21 @@ import loader;
 import utils;
 
 void installPackage(string[] args, bool shouldPackage) {
+    if (exists(args[1]) && extension(args[1]) == ".lbin" && !shouldPackage) {
+        new Loader(format("installing binary package %s", args[1]), (ref Loader loader) {
+            auto archive = new TarGzArchive(read(args[1]));
+            string[] entries;
+            foreach (file; archive.files) {
+                write(file.path, file.data);
+                entries ~= file.path;
+            }
+            foreach (entry; entries) {
+                setAttributes(entry, octal!755);
+            }
+            write(format("/var/lib/luna/installed.d/%s", args[1].split("-")[0]), entries.join("\n"));
+        }).showLoader();
+        return;
+    }
     Lpkg[] packages = parseLpkgFromRepos(parseReposFromDir("/var/lib/luna/repos.conf.d/"), args[1]);
     if (packages.length != 1)
         logger.fatal(format("%s packages with name %s", packages.length == 0 ? "found no" : "found too many", args[1]));
@@ -87,10 +102,12 @@ void installPackage(string[] args, bool shouldPackage) {
                 auto arch = new TarGzArchive();
                 foreach (entry; dirEntries(cacheDir, SpanMode.depth)) {
                     if (isFile(entry)) {
-                        arch.addFile(new TarGzArchive.File(entry.replace(cacheDir, "")));
+                        auto file = new TarGzArchive.File(entry.replace(cacheDir, ""));
+                        file.data = cast(immutable ubyte[])read(entry);
+                        arch.addFile(file);
                     }
                 }
-                write(format("%s-%s_%s.lbin", pkg.name, pkg.tag, main.cfg.libc), cast(ubyte[])arch.serialize());
+                write(format("%s-%s_%s.lbin", pkg.name, pkg.tag, main.cfg.libc), cast(ubyte[]) arch.serialize());
             } else {
                 loader.setMessage(format("installing %s (copying files)", pkg.name));
                 string[] entries = [];
