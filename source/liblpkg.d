@@ -50,7 +50,6 @@ extern (C) Lpkg parseLpkg(string toml) {
         parsed["dependencies"].array.map!(element => element.str).array,
         parsed["build"].array.map!(element => element.str).array,
         parsed["install"].array.map!(element => element.str).array,
-        parsed["uninstall"].array.map!(element => element.str).array
     );
     return lpkg;
 }

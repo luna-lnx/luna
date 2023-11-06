@@ -14,12 +14,14 @@ import std.process : environment, executeShell, Config;
 import std.conv : to;
 import std.typecons : Yes;
 
+import main;
 import liblpkg;
 import liblrepo;
 import logger;
 import loader;
+import utils;
 
-void installPackage(string[] args) {
+void installPackage(string[] args, bool shouldPackage) {
     Lpkg[] packages = parseLpkgFromRepos(parseReposFromDir("/var/lib/luna/repos.conf.d/"), args[1]);
     if (packages.length != 1)
         logger.fatal(format("%s packages with name %s", packages.length == 0 ? "found no" : "found too many", args[1]));
@@ -80,16 +82,27 @@ void installPackage(string[] args) {
             }
         }
         if (cacheDir && exists(cacheDir)) {
-            loader.setMessage(format("installing %s (copying files)", pkg.name));
-            string[] entries = [];
-            foreach (entry; dirEntries(cacheDir, SpanMode.depth)) {
-                if (isFile(entry)) {
-                    entry.copy(entry.replace(cacheDir, ""), Yes.preserveAttributes);
-                    entries ~= entry.replace(cacheDir, "");
+            if (shouldPackage) {
+                loader.setMessage(format("packaging %s", pkg.name));
+                auto arch = new TarGzArchive();
+                foreach (entry; dirEntries(cacheDir, SpanMode.depth)) {
+                    if (isFile(entry)) {
+                        arch.addFile(new TarGzArchive.File(entry.replace(cacheDir, "")));
+                    }
                 }
+                write(format("%s-%s_%s.lbin", pkg.name, pkg.tag, main.cfg.libc), cast(ubyte[])arch.serialize());
+            } else {
+                loader.setMessage(format("installing %s (copying files)", pkg.name));
+                string[] entries = [];
+                foreach (entry; dirEntries(cacheDir, SpanMode.depth)) {
+                    if (isFile(entry)) {
+                        entry.copy(entry.replace(cacheDir, ""), Yes.preserveAttributes);
+                        entries ~= entry.replace(cacheDir, "");
+                    }
+                }
+                write(format("/var/lib/luna/installed.d/%s", pkg.name), entries.join("\n"));
             }
-            write(format("/var/lib/luna/installed.d/%s", pkg.name), entries.join("\n"));
-        }else{
+        } else {
             logger.fatalDebug("this really shouldn't be happening. where is the cachedir?");
         }
     }).showLoader();
