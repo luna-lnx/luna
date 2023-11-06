@@ -11,7 +11,7 @@ import loader;
 void removePackage(string[] args) {
     foreach (entry; dirEntries("/var/lib/luna/installed.d/", SpanMode.depth)) {
         if (baseName(entry) == args[1]) {
-            new Loader(format("removing package %s", args[1]), (ref Loader loader) {
+            new Loader(format("removing package %s", args[1]), (Loader loader) {
                 foreach (line; readText(entry).split("\n")) {
                     remove(line);
                 }

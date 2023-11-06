@@ -10,8 +10,8 @@ class Loader {
     private bool stop = false;
     private string origmsg;
     private string message;
-    private void delegate(ref Loader loader) action;
-    this(string message, void delegate(ref Loader loader) action) {
+    private void delegate(Loader loader) action;
+    this(string message, void delegate(Loader loader) action) {
         this.message = message;
         this.origmsg = message;
         this.action = action;

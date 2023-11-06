@@ -5,7 +5,7 @@ import std.path : baseName;
 import core.thread.osthread : Thread;
 import std.net.curl : download;
 import archive.targz : TarGzArchive;
-import std.file : read, write, exists, mkdirRecurse, dirEntries, SpanMode, isFile, write, copy, PreserveAttributes, setAttributes;
+import std.file : read, write, exists, mkdirRecurse, dirEntries, SpanMode, isFile, write, copy, PreserveAttributes, setAttributes, remove, rmdirRecurse;
 import std.path : dirName, extension;
 import std.array : split, replace, join, array;
 import std.algorithm.searching : canFind;
@@ -32,7 +32,7 @@ void installPackage(string[] args, bool shouldPackage) {
         config.passThrough
     );
     if (exists(args[1]) && extension(args[1]) == ".lbin" && !shouldPackage) {
-        new Loader(format("installing binary package %s", args[1]), (ref Loader loader) {
+        new Loader(format("installing binary package %s", args[1]), (Loader loader) {
             auto archive = new TarGzArchive(read(args[1]));
             string[] entries;
             foreach (file; archive.files) {
@@ -54,15 +54,15 @@ void installPackage(string[] args, bool shouldPackage) {
     Lpkg pkg = packages[0];
     //TODO make this actually work
     logger.info("calculating deps...");
-    logger.info(pkg.install.join("\n"));
-    logger.info(format("%s %s/%s::%s", pretend ? "pretending to install" : "installing",pkg.loc.get.constellation, pkg.name, pkg
+    logger.info(format("%s %s/%s::%s", pretend ? "pretending to install" : "installing", pkg.loc.get.constellation, pkg
+            .name, pkg
             .tag));
     string url = format(pkg.tarball, pkg.tag);
     string srcDir;
-    new Loader(format("downloading %s", baseName(url)), (ref Loader loader) {
+    new Loader(format("downloading %s", baseName(url)), (Loader loader) {
         download(url, format("/usr/src/luna/%s", baseName(url)));
     }).showLoader();
-    new Loader(format("extracting %s", baseName(url)), (ref Loader loader) {
+    new Loader(format("extracting %s", baseName(url)), (Loader loader) {
         auto archive = new TarGzArchive(read(format("/usr/src/luna/%s", baseName(url))));
         foreach (file; archive.files) {
             loader.setMessage(format("extracting %s (%s)", pkg.name, baseName(file.path)));
@@ -78,7 +78,7 @@ void installPackage(string[] args, bool shouldPackage) {
             write(fullName, file.data);
         }
     }).showLoader();
-    new Loader(format("compiling %s", pkg.name), (ref Loader loader) {
+    new Loader(format("compiling %s", pkg.name), (Loader loader) {
         foreach (command; pkg.make) {
             string formattedCmd = command;
             formattedCmd = formattedCmd.replace("$MKFLAGS", main.cfg.mkflags);
@@ -94,7 +94,7 @@ void installPackage(string[] args, bool shouldPackage) {
         }
     }).showLoader();
     new Loader(format("%s %s", shouldPackage ? "packaging" : "installing", pkg.name), (
-            ref Loader loader) {
+            Loader loader) {
         string cacheDir;
         if (array(pkg.install.filter!(s => (canFind(s, "$DEST")))).length == 0)
             logger.error("$DEST not found, stopping to prevent un-uninstallable packages");
@@ -142,5 +142,9 @@ void installPackage(string[] args, bool shouldPackage) {
         } else {
             logger.fatalDebug("this really shouldn't be happening. where is the cachedir?");
         }
+    }).showLoader();
+    new Loader("cleaning up", (Loader loader) {
+        remove("/usr/src/luna/" ~ baseName(format(pkg.tarball, pkg.tag)));
+        rmdirRecurse("/tmp/luna/installcache/" ~ pkg.name);
     }).showLoader();
 }
