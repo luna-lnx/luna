@@ -10,7 +10,7 @@ import update;
 void runDoctor() {
     int problems = 0;
     immutable string[] dirs = [
-        "/var/log/luna/", "/var/lib/luna/repos.conf.d/", "/etc/luna/", "/usr/src/luna/"
+        "/var/log/luna/", "/var/lib/luna/repos.conf.d/", "/etc/luna/", "/usr/src/luna/", "/var/lib/luna/installed.d/"
     ];
     foreach (dir; dirs) {
         if (!exists(dir)) {
