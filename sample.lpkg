@@ -11,7 +11,7 @@ dependencies = [
 build = [
     "chmod +x ./configure",
     "./configure",
-    "make"
+    "make $MKFLAGS"
 ]
 
 # you NEED to add DESTDIR for uninstalling to work properly. lunapm will automatically format $DEST
