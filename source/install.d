@@ -70,9 +70,12 @@ void installPackage(string[] args, bool shouldPackage) {
     new Loader(format("compiling %s", pkg.name), (ref Loader loader) {
         foreach (command; pkg.make) {
             string formattedCmd = command;
-            if (canFind(command, "$MKFLAGS")) {
-                formattedCmd = command.replace("$MKFLAGS", "-j8");
-            }
+            formattedCmd = command.replace("$MKFLAGS", "-j8");
+            formattedCmd = command.replace("$CC", format("\"%s\"", main.cfg.cc));
+            formattedCmd = command.replace("$CXX", format("\"%s\"", main.cfg.cxx));
+            formattedCmd = command.replace("$CFLAGS", format("\"%s\"", main.cfg.cflags));
+            formattedCmd = command.replace("$LDFLAGS", format("\"%s\"", main.cfg.ldflags));
+
             loader.setMessage(format("compiling %s (%s)", pkg.name, formattedCmd));
             auto res = executeShell(formattedCmd, null, Config.none, size_t.max, format("/usr/src/luna/%s", srcDir));
             if (res[0] != 0) {
@@ -80,7 +83,8 @@ void installPackage(string[] args, bool shouldPackage) {
             }
         }
     }).showLoader();
-    new Loader(format("installing %s", pkg.name), (ref Loader loader) {
+    new Loader(format("%s %s", shouldPackage ? "packaging" : "installing", pkg.name), (
+            ref Loader loader) {
         string cacheDir;
         foreach (command; pkg.install) {
             string formattedCmd = command;
@@ -103,7 +107,7 @@ void installPackage(string[] args, bool shouldPackage) {
                 foreach (entry; dirEntries(cacheDir, SpanMode.depth)) {
                     if (isFile(entry)) {
                         auto file = new TarGzArchive.File(entry.replace(cacheDir, ""));
-                        file.data = cast(immutable ubyte[])read(entry);
+                        file.data = cast(immutable ubyte[]) read(entry);
                         arch.addFile(file);
                     }
                 }

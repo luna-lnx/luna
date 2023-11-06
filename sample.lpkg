@@ -10,7 +10,7 @@ dependencies = [
 ]
 build = [
     "chmod +x ./configure",
-    "./configure",
+    "CC=$CC CXX=$CXX CFLAGS=$CFLAGS LDFLAGS=$LDFLAGS ./configure",
     "make $MKFLAGS"
 ]
 
