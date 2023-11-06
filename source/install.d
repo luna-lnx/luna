@@ -75,7 +75,6 @@ void installPackage(string[] args, bool shouldPackage) {
             formattedCmd = formattedCmd.replace("$CXX", format("\"%s\"", main.cfg.cxx));
             formattedCmd = formattedCmd.replace("$CFLAGS", format("\"%s\"", main.cfg.cflags));
             formattedCmd = formattedCmd.replace("$LDFLAGS", format("\"%s\"", main.cfg.ldflags));
-            logger.info(formattedCmd);
             loader.setMessage(format("compiling %s (%s)", pkg.name, formattedCmd));
             auto res = executeShell(formattedCmd, null, Config.none, size_t.max, format("/usr/src/luna/%s", srcDir));
             if (res[0] != 0) {
