@@ -5,12 +5,14 @@ import std.path : baseName;
 import core.thread.osthread : Thread;
 import std.net.curl : download;
 import archive.targz : TarGzArchive;
-import std.file : read, write, exists, mkdirRecurse;
+import std.file : read, write, exists, mkdirRecurse, dirEntries, SpanMode, isFile, write, copy, PreserveAttributes;
 import std.path : dirName;
-import std.array : split, replace;
+import std.array : split, replace, join;
 import std.algorithm.searching : canFind;
+import std.algorithm : map;
 import std.process : environment, executeShell, Config;
 import std.conv : to;
+import std.typecons : Yes;
 
 import liblpkg;
 import liblrepo;
@@ -56,10 +58,11 @@ void installPackage(string[] args) {
         }
     }).showLoader();
     new Loader(format("installing %s", pkg.name), {
+        string cacheDir;
         foreach (command; pkg.install) {
             string formattedName;
             if (canFind(command, "$DEST")) {
-                string cacheDir = format("/tmp/luna/installcache/%s", pkg.name);
+                cacheDir = format("/tmp/luna/installcache/%s", pkg.name);
                 mkdirRecurse(cacheDir);
                 formattedName = command.replace("$DEST", cacheDir);
             }
@@ -68,6 +71,16 @@ void installPackage(string[] args) {
             if (res[0] != 0) {
                 logger.fatal(format("install task '%s' failed with error code %s because of:\n%s", command, res[0], res[1]));
             }
+        }
+        if (cacheDir && exists(cacheDir)) {
+            string[] entries = [];
+            foreach (entry; dirEntries(cacheDir, SpanMode.depth)) {
+                if (isFile(entry)) {
+                    entry.copy(entry.replace(cacheDir, ""), Yes.preserveAttributes);
+                    entries ~= entry.replace(cacheDir, "");
+                }
+            }
+            write(format("/var/lib/luna/installed.d/%s", pkg.name), entries.join("\n"));
         }
     }).showLoader();
 }
