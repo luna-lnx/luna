@@ -87,6 +87,8 @@ void installPackage(string[] args) {
                 }
             }
             write(format("/var/lib/luna/installed.d/%s", pkg.name), entries.join("\n"));
+        }else{
+            logger.fatalDebug("this really shouldn't be happening. where is the cachedir?");
         }
     }).showLoader();
 }

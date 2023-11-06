@@ -8,10 +8,12 @@ private immutable string[] icons = ["/", "|", "\\", "-"];
 
 class Loader {
     private bool stop = false;
-    private string message = "";
+    private string origmsg;
+    private string message;
     private void delegate(ref Loader loader) action;
     this(string message, void delegate(ref Loader loader) action) {
         this.message = message;
+        this.origmsg = message;
         this.action = action;
     }
     
@@ -29,6 +31,7 @@ class Loader {
             stdout.flush();
         }).start();
         this.action(this);
+        setMessage(this.origmsg);
         this.stopLoader();
         t.join();
         return;
