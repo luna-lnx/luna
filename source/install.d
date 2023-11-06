@@ -79,6 +79,7 @@ void installPackage(string[] args) {
             }
         }
         if (cacheDir && exists(cacheDir)) {
+            loader.setMessage(format("installing %s (copying files)", pkg.name));
             string[] entries = [];
             foreach (entry; dirEntries(cacheDir, SpanMode.depth)) {
                 if (isFile(entry)) {
