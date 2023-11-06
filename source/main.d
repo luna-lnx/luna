@@ -15,6 +15,7 @@ import liblrepo;
 import update;
 import doctor;
 import install;
+import remove;
 import logger;
 import utils;
 
@@ -35,6 +36,9 @@ void main(string[] args) {
             case "i|install":
                 installPackage(args);
                 break;
+            case "r|remove":
+                removePackage(args);
+                break;
             default:
                 logger.fatal("how did we get here?");
         }
@@ -49,6 +53,7 @@ void main(string[] args) {
         "u|update", "updates the package repositories", &handler,
         "i|install", "installs a package", &handler,
         "d|doctor", "fixes any potential issues", &handler,
+        "r|remove", "removes a package", &handler,
         config.noBundling,
         config.stopOnFirstNonOption,
         config.passThrough
