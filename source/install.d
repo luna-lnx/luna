@@ -13,6 +13,7 @@ import std.algorithm : map, filter;
 import std.process : environment, executeShell, Config;
 import std.conv : to, octal;
 import std.typecons : Yes;
+import std.getopt : getopt, config;
 
 import main;
 import liblpkg;
@@ -22,16 +23,26 @@ import loader;
 import utils;
 
 void installPackage(string[] args, bool shouldPackage) {
+    bool pretend = false;
+    getopt(
+        args,
+        "pretend", "pretend to install a package", &pretend,
+        config.noBundling,
+        config.stopOnFirstNonOption,
+        config.passThrough
+    );
     if (exists(args[1]) && extension(args[1]) == ".lbin" && !shouldPackage) {
         new Loader(format("installing binary package %s", args[1]), (ref Loader loader) {
             auto archive = new TarGzArchive(read(args[1]));
             string[] entries;
             foreach (file; archive.files) {
-                write(file.path, file.data);
-                entries ~= file.path;
-            }
-            foreach (entry; entries) {
-                setAttributes(entry, octal!755);
+                if (pretend) {
+                    logger.info(file.path);
+                } else {
+                    write(file.path, file.data);
+                    entries ~= file.path;
+                    setAttributes(file.path, octal!755);
+                }
             }
             write(format("/var/lib/luna/installed.d/%s", args[1].split("-")[0]), entries.join("\n"));
         }).showLoader();
@@ -43,8 +54,8 @@ void installPackage(string[] args, bool shouldPackage) {
     Lpkg pkg = packages[0];
     //TODO make this actually work
     logger.info("calculating deps...");
-
-    logger.info(format("installing %s/%s::%s", pkg.loc.get.constellation, pkg.name, pkg
+    logger.info(pkg.install.join("\n"));
+    logger.info(format("%s %s/%s::%s", pretend ? "pretending to install" : "installing",pkg.loc.get.constellation, pkg.name, pkg
             .tag));
     string url = format(pkg.tarball, pkg.tag);
     string srcDir;
@@ -85,7 +96,7 @@ void installPackage(string[] args, bool shouldPackage) {
     new Loader(format("%s %s", shouldPackage ? "packaging" : "installing", pkg.name), (
             ref Loader loader) {
         string cacheDir;
-        if(array(pkg.install.filter!(s => (canFind(s, "$DEST")))).length == 0)
+        if (array(pkg.install.filter!(s => (canFind(s, "$DEST")))).length == 0)
             logger.error("$DEST not found, stopping to prevent un-uninstallable packages");
         foreach (command; pkg.install) {
             string formattedCmd = command;
@@ -106,7 +117,7 @@ void installPackage(string[] args, bool shouldPackage) {
                 loader.setMessage(format("packaging %s", pkg.name));
                 auto arch = new TarGzArchive();
                 foreach (entry; dirEntries(cacheDir, SpanMode.depth)) {
-                    if (isFile(entry)) {
+                    if (exists(entry) && entry.isFile) {
                         auto file = new TarGzArchive.File(entry.replace(cacheDir, ""));
                         file.data = cast(immutable ubyte[]) read(entry);
                         arch.addFile(file);
@@ -117,9 +128,13 @@ void installPackage(string[] args, bool shouldPackage) {
                 loader.setMessage(format("installing %s (copying files)", pkg.name));
                 string[] entries = [];
                 foreach (entry; dirEntries(cacheDir, SpanMode.depth)) {
-                    if (isFile(entry)) {
-                        entry.copy(entry.replace(cacheDir, ""), Yes.preserveAttributes);
-                        entries ~= entry.replace(cacheDir, "");
+                    if (exists(entry) && entry.isFile) {
+                        if (pretend) {
+                            logger.info(entry);
+                        } else {
+                            entry.copy(entry.replace(cacheDir, ""), Yes.preserveAttributes);
+                            entries ~= entry.replace(cacheDir, "");
+                        }
                     }
                 }
                 write(format("/var/lib/luna/installed.d/%s", pkg.name), entries.join("\n"));
