@@ -7,9 +7,9 @@ import std.net.curl : download;
 import archive.targz : TarGzArchive;
 import std.file : read, write, exists, mkdirRecurse, dirEntries, SpanMode, isFile, write, copy, PreserveAttributes, setAttributes;
 import std.path : dirName, extension;
-import std.array : split, replace, join;
+import std.array : split, replace, join, array;
 import std.algorithm.searching : canFind;
-import std.algorithm : map;
+import std.algorithm : map, filter;
 import std.process : environment, executeShell, Config;
 import std.conv : to, octal;
 import std.typecons : Yes;
@@ -70,12 +70,12 @@ void installPackage(string[] args, bool shouldPackage) {
     new Loader(format("compiling %s", pkg.name), (ref Loader loader) {
         foreach (command; pkg.make) {
             string formattedCmd = command;
-            formattedCmd = command.replace("$MKFLAGS", format("\"%s\"", main.cfg.mkflags));
-            formattedCmd = command.replace("$CC", format("\"%s\"", main.cfg.cc));
-            formattedCmd = command.replace("$CXX", format("\"%s\"", main.cfg.cxx));
-            formattedCmd = command.replace("$CFLAGS", format("\"%s\"", main.cfg.cflags));
-            formattedCmd = command.replace("$LDFLAGS", format("\"%s\"", main.cfg.ldflags));
-
+            formattedCmd = formattedCmd.replace("$MKFLAGS", main.cfg.mkflags);
+            formattedCmd = formattedCmd.replace("$CC", format("\"%s\"", main.cfg.cc));
+            formattedCmd = formattedCmd.replace("$CXX", format("\"%s\"", main.cfg.cxx));
+            formattedCmd = formattedCmd.replace("$CFLAGS", format("\"%s\"", main.cfg.cflags));
+            formattedCmd = formattedCmd.replace("$LDFLAGS", format("\"%s\"", main.cfg.ldflags));
+            logger.info(formattedCmd);
             loader.setMessage(format("compiling %s (%s)", pkg.name, formattedCmd));
             auto res = executeShell(formattedCmd, null, Config.none, size_t.max, format("/usr/src/luna/%s", srcDir));
             if (res[0] != 0) {
@@ -86,6 +86,8 @@ void installPackage(string[] args, bool shouldPackage) {
     new Loader(format("%s %s", shouldPackage ? "packaging" : "installing", pkg.name), (
             ref Loader loader) {
         string cacheDir;
+        if(array(pkg.install.filter!(s => (canFind(s, "$DEST")))).length == 0)
+            logger.error("$DEST not found, stopping to prevent un-uninstallable packages");
         foreach (command; pkg.install) {
             string formattedCmd = command;
             if (canFind(command, "$DEST")) {
