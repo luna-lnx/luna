@@ -65,7 +65,7 @@ void installPackage(string[] args, bool shouldPackage) {
     new Loader(format("extracting %s", baseName(url)), (Loader loader) {
         auto archive = new TarGzArchive(read(format("/usr/src/luna/%s", baseName(url))));
         foreach (file; archive.files) {
-            loader.setMessage(format("extracting %s (%s)", pkg.name, baseName(file.path)));
+            loader.setMessage(format("extracting %s (%s)", baseName(url), baseName(file.path)));
             // TODO: make this more reliable. just a best effort to get things working
             string[] splitPath = file.path.split("/");
             if (canFind(splitPath[0], pkg.name) && !srcDir && splitPath.length > 1)
@@ -76,6 +76,7 @@ void installPackage(string[] args, bool shouldPackage) {
                 mkdirRecurse(parentDir);
             }
             write(fullName, file.data);
+            setAttributes(fullName, octal!755);
         }
     }).showLoader();
     new Loader(format("compiling %s", pkg.name), (Loader loader) {
