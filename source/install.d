@@ -7,7 +7,7 @@ import std.net.curl : download;
 import archive.targz : TarGzArchive;
 import std.file : read, write, exists, mkdirRecurse;
 import std.path : dirName;
-import std.array : split;
+import std.array : split, replace;
 import std.algorithm.searching : canFind;
 import std.process : environment, executeShell, Config;
 import std.conv : to;
@@ -55,12 +55,19 @@ void installPackage(string[] args) {
             }
         }
     }).showLoader();
-    new Loader(format("installing %s", pkg.name),  {
+    new Loader(format("installing %s", pkg.name), {
         foreach (command; pkg.install) {
-            auto res = executeShell(command, null, Config.none, size_t.max, format("/usr/src/luna/%s", srcDir));
-                if (res[0] != 0) {
-                    logger.fatal(format("install task '%s' failed with error code %s because of:\n%s", command, res[0], res[1]));
-                }
+            string formattedName;
+            if (canFind(command, "$DEST")) {
+                string cacheDir = format("/tmp/luna/installcache/%s", pkg.name);
+                mkdirRecurse(cacheDir);
+                formattedName = command.replace("$DEST", cacheDir);
+            }
+            auto res = executeShell(formattedName ? formattedName : command, null, Config.none, size_t.max, format(
+                "/usr/src/luna/%s", srcDir));
+            if (res[0] != 0) {
+                logger.fatal(format("install task '%s' failed with error code %s because of:\n%s", command, res[0], res[1]));
+            }
         }
     }).showLoader();
 }

@@ -1,19 +1,23 @@
 # this package is an example. don't actually use it, TOML format
 
-name = "example"
-description = "example"
-tag = "1.2.4"
-tarball = "https://git.musl-libc.org/cgit/musl/snapshot/musl-%s.tar.gz"
+name = "yash"
+description = "yash shell"
+tag = "2.55"
+tarball = "https://github.com/magicant/yash/archive/refs/tags/%s.tar.gz"
 # TODO: add other formats
 dependencies = [
     "make"
 ]
 build = [
+    "chmod +x ./configure",
     "./configure",
     "make"
 ]
+
+# you NEED to add DESTDIR for uninstalling to work properly. lunapm will automatically format $DEST
+
 install = [
-    "make install"
+    "make install DESTDIR=$DEST"
 ]
 uninstall = [
     "make uninstall"
