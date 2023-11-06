@@ -4,7 +4,7 @@ import std.stdio : writef, writefln, writeln, stdout;
 import core.thread.osthread : Thread;
 import core.time : dur;
 import core.atomic : atomicStore;
-private immutable string[] icons = ["/", "|", "\\", "-"];
+private immutable string[] icons = ["\\", "|", "/", "-"];
 
 class Loader {
     private bool stop = false;
