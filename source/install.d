@@ -78,7 +78,7 @@ void installPackage(string[] args, bool shouldPackage) {
             loader.setMessage(format("compiling %s (%s)", pkg.name, formattedCmd));
             auto res = executeShell(formattedCmd, null, Config.none, size_t.max, format("/usr/src/luna/%s", srcDir));
             if (res[0] != 0) {
-                logger.fatal(format("compile task '%s' failed with error code %s because of:\n%s", command, res[0], res[1]));
+                logger.fatal(format("\ncompile task '%s' failed with error code %s because of:\n%s", command, res[0], res[1]));
             }
         }
     }).showLoader();
@@ -98,7 +98,7 @@ void installPackage(string[] args, bool shouldPackage) {
             auto res = executeShell(formattedCmd, null, Config.none, size_t.max, format(
                 "/usr/src/luna/%s", srcDir));
             if (res[0] != 0) {
-                logger.fatal(format("install task '%s' failed with error code %s because of:\n%s", command, res[0], res[1]));
+                logger.fatal(format("\ninstall task '%s' failed with error code %s because of:\n%s", command, res[0], res[1]));
             }
         }
         if (cacheDir && exists(cacheDir)) {
