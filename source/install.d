@@ -15,7 +15,7 @@ import std.conv : to, octal;
 import std.typecons : Yes;
 import std.getopt : getopt, config;
 import std.string : startsWith;
-import std.stdio : stdout, stdin;
+import std.stdio : stdout, readln;
 
 import main;
 import liblpkg;
@@ -61,9 +61,9 @@ void installPackageFromCommandLine(string[] args, bool shouldPackage) {
         ordered = resolveDependencies(pkg);
     }).showLoader();
     logger.info(format("to be installed: \n%s", ordered.map!(lpkg => format("%s::%s", lpkg.name, lpkg.tag)).array.join("\n")));
-    stdout.write("ok? [Y/n] ");
-    string input = stdin.readln;
-    if(input != "y" && input != "")
+    stdout.write("ok? [y/n] ");
+    string input = readln;
+    if(input != "y\n" && input != "\n")
         logger.fatal("aborting...");
     foreach (Lpkg key; ordered) {
         if (dirEntries("/var/lib/luna/installed.d/", SpanMode.shallow)
