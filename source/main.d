@@ -37,7 +37,7 @@ void main(string[] args) {
                 updateRepos(args);
                 break;
             case "d|doctor":
-                runDoctor();
+                runDoctor(args);
                 break;
             case "i|install":
                 installPackageFromCommandLine(args, false);

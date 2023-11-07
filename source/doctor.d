@@ -12,6 +12,7 @@ void runDoctor(string[] args) {
     int problems = 0;
     string destDir = "";
     getopt(
+        args,
         "destdir", "destination to make repairs", &destDir,
         config.noBundling,
         config.stopOnFirstNonOption,
