@@ -133,12 +133,14 @@ void installPackage(string[] args, bool shouldPackage) {
                         if (pretend) {
                             logger.info(entry);
                         } else {
+                            mkdirRecurse(dirName(entry.replace(cacheDir, "")));
                             entry.copy(entry.replace(cacheDir, ""), Yes.preserveAttributes);
                             entries ~= entry.replace(cacheDir, "");
                         }
                     }
                 }
-                write(format("/var/lib/luna/installed.d/%s", pkg.name), entries.join("\n"));
+                if (!pretend)
+                    write(format("/var/lib/luna/installed.d/%s", pkg.name), entries.join("\n"));
             }
         } else {
             logger.fatalDebug("this really shouldn't be happening. where is the cachedir?");
