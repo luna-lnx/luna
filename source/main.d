@@ -40,10 +40,10 @@ void main(string[] args) {
                 runDoctor();
                 break;
             case "i|install":
-                installPackage(args, false);
+                installPackageFromCommandLine(args, false);
                 break;
             case "p|package":
-                installPackage(args, true);
+                installPackageFromCommandLine(args, true);
                 break;
             case "r|remove":
                 removePackage(args);

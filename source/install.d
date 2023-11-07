@@ -21,8 +21,9 @@ import liblrepo;
 import logger;
 import loader;
 import utils;
+import libdep;
 
-void installPackage(string[] args, bool shouldPackage) {
+void installPackageFromCommandLine(string[] args, bool shouldPackage) {
     bool pretend = false;
     getopt(
         args,
@@ -54,6 +55,15 @@ void installPackage(string[] args, bool shouldPackage) {
     Lpkg pkg = packages[0];
     //TODO make this actually work
     logger.info("calculating deps...");
+    Lpkg[] ordered = resolveDependencies(pkg);
+    foreach (Lpkg key; ordered) {
+        logger.info(format("installing %s", key.name));
+        installPackage(key, shouldPackage, pretend);
+    }
+}
+
+void installPackage(Lpkg pkg, bool shouldPackage, bool pretend) {
+
     logger.info(format("%s %s/%s::%s", pretend ? "pretending to install" : "installing", pkg.loc.get.constellation, pkg
             .name, pkg
             .tag));
