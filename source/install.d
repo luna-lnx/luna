@@ -15,6 +15,7 @@ import std.conv : to, octal;
 import std.typecons : Yes;
 import std.getopt : getopt, config;
 import std.string : startsWith;
+import std.stdio : stdout, stdin;
 
 import main;
 import liblpkg;
@@ -55,8 +56,15 @@ void installPackageFromCommandLine(string[] args, bool shouldPackage) {
         logger.fatal(format("%s packages with name %s", packages.length == 0 ? "found no" : "found too many", args[1]));
     Lpkg pkg = packages[0];
     //TODO make this actually work
-    logger.info("calculating deps...");
-    Lpkg[] ordered = resolveDependencies(pkg);
+    Lpkg[] ordered;
+    new Loader("calculating deps", (Loader loader) {
+        ordered = resolveDependencies(pkg);
+    }).showLoader();
+    logger.info(format("to be installed: \n%s", ordered.map!(lpkg => format("%s::%s", lpkg.name, lpkg.tag)).array.join("\n")));
+    stdout.write("ok? [Y/n] ");
+    string input = stdin.readln;
+    if(input != "y" && input != "")
+        logger.fatal("aborting...");
     foreach (Lpkg key; ordered) {
         if (dirEntries("/var/lib/luna/installed.d/", SpanMode.shallow)
             .map!(entry => baseName(entry.name)).array.canFind(format("%s::%s", key.name, key.tag))) {
