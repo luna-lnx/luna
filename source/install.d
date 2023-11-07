@@ -166,7 +166,7 @@ void installPackage(Lpkg pkg, bool shouldPackage, bool pretend, string destDir) 
                         if (pretend) {
                             logger.info(entry);
                         } else {
-                            mkdirRecurse(dirName(entry.replace(cacheDir, "")));
+                            mkdirRecurse(destDir ~ dirName(entry.replace(cacheDir, "")));
                             entry.copy(destDir ~ entry.replace(cacheDir, ""), Yes.preserveAttributes);
                             entries ~= entry.replace(cacheDir, "");
                         }
