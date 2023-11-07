@@ -66,6 +66,7 @@ void installPackageFromCommandLine(string[] args, bool shouldPackage) {
     if(input != "y\n" && input != "\n")
         logger.fatal("aborting...");
     foreach (Lpkg key; ordered) {
+        // i think my programming license should be revoked
         if (dirEntries("/var/lib/luna/installed.d/", SpanMode.shallow)
             .map!(entry => baseName(entry.name)).array.canFind(format("%s::%s", key.name, key.tag))) {
             logger.info(format("%s::%s already installed, moving forwards", key.name, key.tag));
