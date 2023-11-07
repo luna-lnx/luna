@@ -57,9 +57,14 @@ void installPackageFromCommandLine(string[] args, bool shouldPackage) {
     logger.info("calculating deps...");
     Lpkg[] ordered = resolveDependencies(pkg);
     foreach (Lpkg key; ordered) {
+        if(dirEntries("/var/lib/luna/installed.d/", SpanMode.shallow).map!(entry => baseName(entry.name)).array.canFind(key.name)){
+            logger.info(format("%s already installed, moving forwards", key.name));
+            continue;
+        }
         logger.info(format("installing %s", key.name));
         installPackage(key, shouldPackage, pretend);
     }
+    logger.info("done!");
 }
 
 void installPackage(Lpkg pkg, bool shouldPackage, bool pretend) {
