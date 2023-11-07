@@ -57,8 +57,9 @@ void installPackageFromCommandLine(string[] args, bool shouldPackage) {
     logger.info("calculating deps...");
     Lpkg[] ordered = resolveDependencies(pkg);
     foreach (Lpkg key; ordered) {
-        if(dirEntries("/var/lib/luna/installed.d/", SpanMode.shallow).map!(entry => baseName(entry.name)).array.canFind(key.name)){
-            logger.info(format("%s already installed, moving forwards", key.name));
+        if (dirEntries("/var/lib/luna/installed.d/", SpanMode.shallow)
+            .map!(entry => baseName(entry.name)).array.canFind(format("%s::%s", key.name, key.tag))) {
+            logger.info(format("%s::%s already installed, moving forwards", key.name, key.tag));
             continue;
         }
         logger.info(format("installing %s", key.name));
@@ -155,7 +156,8 @@ void installPackage(Lpkg pkg, bool shouldPackage, bool pretend) {
                     }
                 }
                 if (!pretend)
-                    write(format("/var/lib/luna/installed.d/%s", pkg.name), entries.join("\n"));
+                    write(format("/var/lib/luna/installed.d/%s::%s", pkg.name, pkg.tag), entries.join(
+                        "\n"));
             }
         } else {
             logger.fatalDebug("this really shouldn't be happening. where is the cachedir?");
