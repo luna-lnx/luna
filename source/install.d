@@ -27,9 +27,11 @@ import libdep;
 
 void installPackageFromCommandLine(string[] args, bool shouldPackage) {
     bool pretend = false;
+    string destdir = "";
     getopt(
         args,
         "pretend", "pretend to install a package", &pretend,
+        "destdir", "destination for installation (e.g. for bootstrapping)", &destdir,
         config.noBundling,
         config.stopOnFirstNonOption,
         config.passThrough
@@ -78,12 +80,12 @@ void installPackageFromCommandLine(string[] args, bool shouldPackage) {
                     .filter!(entry => baseName(entry.name).startsWith(format("%s::", pkg.name))).array[0]);
         }
         logger.info(format("installing %s", key.name));
-        installPackage(key, shouldPackage, pretend);
+        installPackage(key, shouldPackage, pretend, destdir);
     }
     logger.info("done!");
 }
 
-void installPackage(Lpkg pkg, bool shouldPackage, bool pretend) {
+void installPackage(Lpkg pkg, bool shouldPackage, bool pretend, string destDir) {
 
     logger.info(format("%s %s/%s::%s", pretend ? "pretending to install" : "installing", pkg.loc.get.constellation, pkg
             .name, pkg
@@ -165,13 +167,13 @@ void installPackage(Lpkg pkg, bool shouldPackage, bool pretend) {
                             logger.info(entry);
                         } else {
                             mkdirRecurse(dirName(entry.replace(cacheDir, "")));
-                            entry.copy(entry.replace(cacheDir, ""), Yes.preserveAttributes);
+                            entry.copy(destDir ~ entry.replace(cacheDir, ""), Yes.preserveAttributes);
                             entries ~= entry.replace(cacheDir, "");
                         }
                     }
                 }
                 if (!pretend)
-                    write(format("/var/lib/luna/installed.d/%s::%s", pkg.name, pkg.tag), entries.join(
+                    write(format(destDir ~ "/var/lib/luna/installed.d/%s::%s", pkg.name, pkg.tag), entries.join(
                         "\n"));
             }
         } else {
