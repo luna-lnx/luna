@@ -14,6 +14,7 @@ import std.process : environment, executeShell, Config;
 import std.conv : to, octal;
 import std.typecons : Yes;
 import std.getopt : getopt, config;
+import std.string : startsWith;
 
 import main;
 import liblpkg;
@@ -61,6 +62,11 @@ void installPackageFromCommandLine(string[] args, bool shouldPackage) {
             .map!(entry => baseName(entry.name)).array.canFind(format("%s::%s", key.name, key.tag))) {
             logger.info(format("%s::%s already installed, moving forwards", key.name, key.tag));
             continue;
+        } else if (dirEntries("/var/lib/luna/installed.d/", SpanMode.shallow)
+            .map!(entry => baseName(entry.name)).array.canFind(format("%s::", key.name))) {
+            logger.info(format("%s already installed, but is out of date. upgrading.", key.name));
+            remove(dirEntries("/var/lib/luna/installed.d/", SpanMode.shallow)
+                    .filter!(entry => baseName(entry.name).startsWith(format("%s::", pkg.name))).array[0]);
         }
         logger.info(format("installing %s", key.name));
         installPackage(key, shouldPackage, pretend);
