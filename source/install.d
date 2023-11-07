@@ -6,7 +6,7 @@ import core.thread.osthread : Thread;
 import std.net.curl : download;
 import archive.targz : TarGzArchive;
 import std.file : read, write, exists, mkdirRecurse, dirEntries, SpanMode, isFile, write, copy, PreserveAttributes, setAttributes, remove, rmdirRecurse;
-import std.path : dirName, extension;
+import std.path : dirName, extension, expandTilde;
 import std.array : split, replace, join, array;
 import std.algorithm.searching : canFind;
 import std.algorithm : map, filter;
@@ -86,7 +86,7 @@ void installPackageFromCommandLine(string[] args, bool shouldPackage) {
 }
 
 void installPackage(Lpkg pkg, bool shouldPackage, bool pretend, string destDir) {
-
+    destDir = expandTilde(destDir);
     logger.info(format("%s %s/%s::%s", pretend ? "pretending to install" : "installing", pkg.loc.get.constellation, pkg
             .name, pkg
             .tag));
