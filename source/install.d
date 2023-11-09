@@ -127,7 +127,7 @@ void installPackage(Lpkg pkg, bool shouldPackage, bool pretend, string destDir) 
             loader.setMessage(format("compiling %s (%s)", pkg.name, formattedCmd));
             auto res = executeShell(formattedCmd, null, Config.none, size_t.max, format("/usr/src/luna/%s", srcDir));
             if (res[0] != 0) {
-                write("\n");
+                stdout.write("\n");
                 logger.fatal(format("compile task '%s' failed with error code %s because of:\n%s", command, res[0], res[1]));
             }
         }
