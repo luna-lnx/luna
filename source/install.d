@@ -44,12 +44,12 @@ void installPackageFromCommandLine(string[] args, bool shouldPackage) {
                 if (pretend) {
                     logger.info(file.path);
                 } else {
-                    write(file.path, file.data);
+                    write(destdir ~ file.path, file.data);
                     entries ~= file.path;
                     setAttributes(file.path, octal!755);
                 }
             }
-            write(format("/var/lib/luna/installed.d/%s", args[1].split("-")[0]), entries.join("\n"));
+            write(format(destdir ~ "/var/lib/luna/installed.d/%s", args[1].split("-")[0]), entries.join("\n"));
         }).showLoader();
         return;
     }
@@ -70,14 +70,14 @@ void installPackageFromCommandLine(string[] args, bool shouldPackage) {
         logger.fatal("aborting...");
     foreach (Lpkg key; ordered) {
         // i think my programming license should be revoked
-        if (dirEntries("/var/lib/luna/installed.d/", SpanMode.shallow)
+        if (dirEntries(destdir ~ "/var/lib/luna/installed.d/", SpanMode.shallow)
             .map!(entry => baseName(entry.name)).array.canFind(format("%s::%s", key.name, key.tag))) {
             logger.info(format("%s::%s already installed, moving forwards", key.name, key.tag));
             continue;
-        } else if (dirEntries("/var/lib/luna/installed.d/", SpanMode.shallow)
+        } else if (dirEntries(destdir ~ "/var/lib/luna/installed.d/", SpanMode.shallow)
             .map!(entry => baseName(entry.name)).array.canFind(format("%s::", key.name))) {
             logger.info(format("%s already installed, but is out of date. upgrading.", key.name));
-            remove(dirEntries("/var/lib/luna/installed.d/", SpanMode.shallow)
+            remove(dirEntries(destdir ~ "/var/lib/luna/installed.d/", SpanMode.shallow)
                     .filter!(entry => baseName(entry.name)
                         .startsWith(format("%s::", pkg.name))).array[0]);
         }
