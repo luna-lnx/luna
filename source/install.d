@@ -62,10 +62,11 @@ void installPackageFromCommandLine(string[] args, bool shouldPackage) {
     new Loader("calculating deps", (Loader loader) {
         ordered = resolveDependencies(pkg);
     }).showLoader();
-    logger.info(format("to be installed: \n%s", ordered.map!(lpkg => format("%s::%s", lpkg.name, lpkg.tag)).array.join("\n")));
+    logger.info(format("to be installed: \n%s", ordered.map!(lpkg => format("%s::%s", lpkg.name, lpkg
+            .tag)).array.join("\n")));
     stdout.write("ok? [y/n] ");
     string input = readln;
-    if(input != "y\n" && input != "\n")
+    if (input != "y\n" && input != "\n")
         logger.fatal("aborting...");
     foreach (Lpkg key; ordered) {
         // i think my programming license should be revoked
@@ -77,7 +78,8 @@ void installPackageFromCommandLine(string[] args, bool shouldPackage) {
             .map!(entry => baseName(entry.name)).array.canFind(format("%s::", key.name))) {
             logger.info(format("%s already installed, but is out of date. upgrading.", key.name));
             remove(dirEntries("/var/lib/luna/installed.d/", SpanMode.shallow)
-                    .filter!(entry => baseName(entry.name).startsWith(format("%s::", pkg.name))).array[0]);
+                    .filter!(entry => baseName(entry.name)
+                        .startsWith(format("%s::", pkg.name))).array[0]);
         }
         logger.info(format("installing %s", key.name));
         installPackage(key, shouldPackage, pretend, destdir);
@@ -118,8 +120,10 @@ void installPackage(Lpkg pkg, bool shouldPackage, bool pretend, string destDir) 
             formattedCmd = formattedCmd.replace("$MKFLAGS", main.cfg.mkflags);
             formattedCmd = formattedCmd.replace("$CC", format("\"%s\"", main.cfg.cc));
             formattedCmd = formattedCmd.replace("$CXX", format("\"%s\"", main.cfg.cxx));
-            formattedCmd = formattedCmd.replace("$CFLAGS", format("\"%s\"", main.cfg.cflags));
+            formattedCmd = formattedCmd.replace("$CFLAGS", format("\"%s\"", format("%s %s", main.cfg.cflags, destDir != "" ? format(
+                "--sysroot=%s") : "")));
             formattedCmd = formattedCmd.replace("$LDFLAGS", format("\"%s\"", main.cfg.ldflags));
+            formattedCmd = command.replace("$DEST", destDir);
             loader.setMessage(format("compiling %s (%s)", pkg.name, formattedCmd));
             auto res = executeShell(formattedCmd, null, Config.none, size_t.max, format("/usr/src/luna/%s", srcDir));
             if (res[0] != 0) {
@@ -167,7 +171,8 @@ void installPackage(Lpkg pkg, bool shouldPackage, bool pretend, string destDir) 
                             logger.info(entry);
                         } else {
                             mkdirRecurse(destDir ~ dirName(entry.replace(cacheDir, "")));
-                            entry.copy(destDir ~ entry.replace(cacheDir, ""), Yes.preserveAttributes);
+                            entry.copy(destDir ~ entry.replace(cacheDir, ""), Yes
+                                .preserveAttributes);
                             entries ~= entry.replace(cacheDir, "");
                         }
                     }
