@@ -120,8 +120,8 @@ void installPackage(Lpkg pkg, bool shouldPackage, bool pretend, string destDir) 
             formattedCmd = formattedCmd.replace("$MKFLAGS", main.cfg.mkflags);
             formattedCmd = formattedCmd.replace("$CC", format("\"%s\"", main.cfg.cc));
             formattedCmd = formattedCmd.replace("$CXX", format("\"%s\"", main.cfg.cxx));
-            formattedCmd = formattedCmd.replace("$CFLAGS", format("\"%s\"", format("%s %s", main.cfg.cflags, destDir != "" ? format(
-                "--sysroot=%s", destDir) : "")));
+            formattedCmd = formattedCmd.replace("$CFLAGS", format("\"%s\"", format("%s%s", main.cfg.cflags, destDir != "" ? format(
+                " --sysroot=%s", destDir) : "")));
             formattedCmd = formattedCmd.replace("$LDFLAGS", format("\"%s\"", main.cfg.ldflags));
             formattedCmd = formattedCmd.replace("$DEST", destDir);
             loader.setMessage(format("compiling %s (%s)", pkg.name, formattedCmd));
