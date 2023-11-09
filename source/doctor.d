@@ -24,7 +24,7 @@ void runDoctor(string[] args) {
         "/usr/src/luna/", "/var/lib/luna/installed.d/"
     ];
     foreach (dir; dirs) {
-        if (!exists(dir)) {
+        if (!exists(destDir ~ dir)) {
             ++problems;
             logger.info(format("creating %s", destDir ~ dir));
             mkdirRecurse(destDir ~ dir);
