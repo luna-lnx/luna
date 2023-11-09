@@ -123,7 +123,7 @@ void installPackage(Lpkg pkg, bool shouldPackage, bool pretend, string destDir) 
             formattedCmd = formattedCmd.replace("$CFLAGS", format("\"%s\"", format("%s %s", main.cfg.cflags, destDir != "" ? format(
                 "--sysroot=%s", destDir) : "")));
             formattedCmd = formattedCmd.replace("$LDFLAGS", format("\"%s\"", main.cfg.ldflags));
-            formattedCmd = command.replace("$DEST", destDir);
+            formattedCmd = formattedCmd.replace("$DEST", destDir);
             loader.setMessage(format("compiling %s (%s)", pkg.name, formattedCmd));
             auto res = executeShell(formattedCmd, null, Config.none, size_t.max, format("/usr/src/luna/%s", srcDir));
             if (res[0] != 0) {
