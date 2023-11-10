@@ -13,7 +13,8 @@ void removePackage(string[] args) {
         if (baseName(entry).startsWith(args[1] ~ "::")) {
             new Loader(format("removing package %s", args[1]), (Loader loader) {
                 foreach (line; readText(entry).split("\n")) {
-                    remove(line);
+                    if(exists(line))
+                        remove(line);
                 }
             }).showLoader();
             remove(entry);
