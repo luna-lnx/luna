@@ -83,6 +83,9 @@ void installPackageFromCommandLine(string[] args, bool shouldPackage) {
         // i think my programming license should be revoked
         if (dirEntries(destdir ~ "/var/lib/luna/installed.d/", SpanMode.shallow)
             .map!(entry => baseName(entry.name)).array.canFind(format("%s::%s", key.name, key.tag))) {
+            if(key.name == pkg.name){
+                logger.info(format("%s::%s already installed, cya", key.name, key.tag));
+            }
             continue;
         } else if (dirEntries(destdir ~ "/var/lib/luna/installed.d/", SpanMode.shallow)
             .map!(entry => baseName(entry.name)).array.canFind(format("%s::", key.name))) {
