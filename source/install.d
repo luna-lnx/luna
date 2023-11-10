@@ -27,11 +27,13 @@ import libdep;
 
 void installPackageFromCommandLine(string[] args, bool shouldPackage) {
     bool pretend = false;
+    bool y = false;
     string destdir = "";
     getopt(
         args,
         "pretend", "pretend to install a package", &pretend,
         "destdir", "destination for installation (e.g. for bootstrapping)", &destdir,
+        "y|yes", "skip prompts", &y,
         config.noBundling,
         config.stopOnFirstNonOption,
         config.passThrough
@@ -58,7 +60,7 @@ void installPackageFromCommandLine(string[] args, bool shouldPackage) {
     if (exists(args[1]) && extension(args[1]) == ".lpkg") {
         logger.info("detected lpkg as argument");
         pkg = parseLpkgFromFile(args[1]);
-    }else{
+    } else {
         Lpkg[] packages = parseLpkgFromRepos(
             parseReposFromDir("/var/lib/luna/repos.conf.d/"), args[1]);
         if (packages.length != 1)
@@ -69,12 +71,14 @@ void installPackageFromCommandLine(string[] args, bool shouldPackage) {
     new Loader("calculating deps", (Loader loader) {
         ordered = resolveDependencies(pkg);
     }).showLoader();
-    logger.info(format("to be installed: \n%s", ordered.map!(lpkg => format("%s::%s", lpkg.name, lpkg
-            .tag)).array.join("\n")));
-    stdout.write("ok? [y/n] ");
-    string input = readln;
-    if (input != "y\n" && input != "\n")
-        logger.fatal("aborting...");
+    if (!y) {
+        logger.info(format("to be installed: \n%s", ordered.map!(lpkg => format("%s::%s", lpkg.name, lpkg
+                .tag)).array.join("\n")));
+        stdout.write("ok? [y/n] ");
+        string input = readln;
+        if (input != "y\n" && input != "\n")
+            logger.fatal("aborting...");
+    }
     foreach (Lpkg key; ordered) {
         // i think my programming license should be revoked
         if (dirEntries(destdir ~ "/var/lib/luna/installed.d/", SpanMode.shallow)
