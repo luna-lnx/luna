@@ -49,14 +49,23 @@ void installPackageFromCommandLine(string[] args, bool shouldPackage) {
                     setAttributes(file.path, octal!755);
                 }
             }
-            write(format(destdir ~ "/var/lib/luna/installed.d/%s", args[1].split("-")[0]), entries.join("\n"));
+            write(format(destdir ~ "/var/lib/luna/installed.d/%s", args[1].split("-")[0]), entries.join(
+                "\n"));
         }).showLoader();
         return;
     }
-    Lpkg[] packages = parseLpkgFromRepos(parseReposFromDir("/var/lib/luna/repos.conf.d/"), args[1]);
-    if (packages.length != 1)
-        logger.fatal(format("%s packages with name %s", packages.length == 0 ? "found no" : "found too many", args[1]));
-    Lpkg pkg = packages[0];
+    Lpkg pkg;
+    if (exists(args[1]) && extension(args[1]) == ".lpkg") {
+        logger.info("detected lpkg as argument");
+        pkg = parseLpkgFromFile(args[1]);
+    }
+    if (!is(typeof(pkg))) {
+        Lpkg[] packages = parseLpkgFromRepos(
+            parseReposFromDir("/var/lib/luna/repos.conf.d/"), args[1]);
+        if (packages.length != 1)
+            logger.fatal(format("%s packages with name %s", packages.length == 0 ? "found no" : "found too many", args[1]));
+        pkg = packages[0];
+    }
     //TODO make this actually work
     Lpkg[] ordered;
     new Loader("calculating deps", (Loader loader) {
