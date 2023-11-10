@@ -1,6 +1,6 @@
 module remove;
 
-import std.file : readText, dirEntries, SpanMode, remove;
+import std.file : readText, dirEntries, SpanMode, remove, exists;
 import std.path : baseName;
 import std.array : split;
 import std.format : format;
