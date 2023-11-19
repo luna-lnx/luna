@@ -6,8 +6,10 @@ set(CMAKE_CXX_STANDARD 17)
 add_subdirectory(lib/spdlog)
 add_subdirectory(lib/cpr)
 
-add_executable(luna src/main.cpp)
-target_link_libraries(luna spdlog)
+file(GLOB SOURCES "src/*.cpp")
+add_executable(luna ${SOURCES})
+
+target_link_libraries(luna spdlog cpr)
 target_link_options(luna PRIVATE -s)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Oz -flto=full")

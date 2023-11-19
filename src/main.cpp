@@ -3,6 +3,8 @@
 #include "spdlog/sinks/rotating_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 
+#include "update.hpp"
+
 #define VERS "v0.1"
 
 void initLogger()
@@ -19,5 +21,6 @@ int main(int argc, char* argv[])
     initLogger();
     spdlog::get("default")->info("luna {}", VERS);
     std::vector<std::string> arguments(argv + 1, argv + argc);
+    update::updateRepos(arguments);
     return 0;
 }
