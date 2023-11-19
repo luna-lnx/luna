@@ -3,7 +3,7 @@ using namespace std;
 #include <string>
 #include <deque>
 
-std::deque<std::string> split(std::string in, std::string del){
+deque<string> split(string in, string del){
     deque<string> out;
     size_t pos = 0;
     while((pos = in.find(del)) != string::npos){
