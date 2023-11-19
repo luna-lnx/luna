@@ -7,3 +7,4 @@ add_subdirectory(lib/spdlog)
 add_executable(luna src/main.cpp)
 target_link_libraries(luna spdlog)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Oz")

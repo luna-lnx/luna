@@ -4,6 +4,6 @@
 #include "spdlog/spdlog.h"
 
 int main() {
-    spdlog::info("haiii x3");
+    spdlog::info("luna {}", VERS);
     return 0;
 }
