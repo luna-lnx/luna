@@ -11,7 +11,7 @@ class Arg
 class ParseArgs
 {
   public:
-    ParseArgs &addArgument(std::string names, void (*func)(std::deque<std::string>));
+    void addArgument(std::string names, void (*func)(std::deque<std::string>));
 
     void parseArgs(std::deque<std::string> argsin);
 
