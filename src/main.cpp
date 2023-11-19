@@ -14,10 +14,10 @@ void initLogger()
     spdlog::register_logger(std::make_shared<spdlog::logger>("default", begin(sinks), end(sinks)));
 }
 
-int main()
+int main(int argc, char* argv[])
 {
-    // initialize the logger
     initLogger();
     spdlog::get("default")->info("luna {}", VERS);
+    std::vector<std::string> arguments(argv + 1, argv + argc);
     return 0;
 }
