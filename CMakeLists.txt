@@ -8,6 +8,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_subdirectory(lib/spdlog)
 add_subdirectory(lib/cpr)
 
+include_directories(include)
+
 file(GLOB SOURCES "src/*.cpp")
 add_executable(luna ${SOURCES})
 
