@@ -1,6 +1,8 @@
 #include <iostream>
+#include "spdlog/spdlog.h"
+#define VERS "v0.1"
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    spdlog::info("hii x3");
     return 0;
 }
