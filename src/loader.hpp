@@ -5,11 +5,11 @@
 class Loader
 {
   public:
-	Loader(char *taskName, void (*task)(Loader &));
+    Loader(char *taskName, void (*task)(Loader &));
 
   private:
-	char *taskName;
-	void (*task)(Loader &);
-	std::atomic<bool> stopping = false;
-	void doLoader();
+    char *taskName;
+    void (*task)(Loader &);
+    std::atomic<bool> stopping = false;
+    void doLoader();
 };

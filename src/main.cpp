@@ -1,10 +1,11 @@
-#include <iostream>
-#include "spdlog/spdlog.h"
 #include "spdlog/sinks/rotating_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
+#include "spdlog/spdlog.h"
+#include <deque>
+#include <iostream>
 
+#include "parseargs.hpp"
 #include "update.hpp"
-
 #define VERS "v0.1"
 
 void initLogger()
@@ -18,11 +19,13 @@ void initLogger()
     spdlog::get("default")->set_pattern("%v");
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     initLogger();
     spdlog::get("default")->info("luna {}", VERS);
-    std::vector<std::string> arguments(argv + 1, argv + argc);
-    update::updateRepos(arguments);
+    std::deque<std::string> arguments(argv + 1, argv + argc);
+    ParseArgs pa;
+    pa.addArgument("-u|--update|update", &update::updateRepos);
+    pa.parseArgs(arguments);
     return 0;
 }

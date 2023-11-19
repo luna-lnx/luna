@@ -15,11 +15,13 @@ void Loader::doLoader()
 			{
 				for (int i = 0; i < 4; ++i)
 				{
-					std::cout << "\r" << icons[i] << " " << taskName << std::flush;
+					printf("\r%s %s", icons[i], taskName);
+					std::cout << std::flush;
 					std::this_thread::sleep_for(std::chrono::milliseconds(150));
 				}
 			}
-			std::cout << "\r" << taskName << "... done!" << std::flush << std::endl;
+			printf("\r%s... done!\n", taskName);
+			std::cout << std::flush;
 		},
 		std::ref(stopping));
 
