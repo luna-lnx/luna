@@ -11,4 +11,5 @@ std::deque<std::string> split(std::string in, std::string del){
         in.erase(0, pos + del.length());
     }
     out.push_front(in);
+    return out;
 }

@@ -9,10 +9,9 @@ Arg::Arg(std::string names, void (*func)(std::deque<std::string>))
     this->func = func;
 };
 
-ParseArgs &ParseArgs::addArgument(std::string names, void (*func)(std::deque<std::string>))
+void ParseArgs::addArgument(std::string names, void (*func)(std::deque<std::string>))
 {
     arguments.push_back(Arg(names, func));
-    return *this;
 }
 
 void ParseArgs::parseArgs(std::deque<std::string> argsin)
