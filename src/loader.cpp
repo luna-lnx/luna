@@ -8,7 +8,6 @@
 
 using namespace std;
 
-
 void Loader::doLoader()
 {
     thread loader(
