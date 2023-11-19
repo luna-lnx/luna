@@ -1,0 +1,6 @@
+[submodule "lib/plog"]
+	path = lib/plog
+	url = https://github.com/SergiusTheBest/plog
+[submodule "lib/spdlog"]
+	path = lib/spdlog
+	url = https://github.com/gabime/spdlog
