@@ -1,8 +1,9 @@
 #include <iostream>
-#include "spdlog/spdlog.h"
 #define VERS "v0.1"
 
+#include "spdlog/spdlog.h"
+
 int main() {
-    spdlog::info("hii x3");
+    spdlog::info("haiii x3");
     return 0;
 }
