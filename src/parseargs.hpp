@@ -10,11 +10,11 @@ class Arg
 };
 class ParseArgs
 {
-  private:
-    std::deque<Arg> arguments;
-
   public:
     ParseArgs &addArgument(std::string names, void (*func)(std::deque<std::string>));
 
     void parseArgs(std::deque<std::string> argsin);
+
+  private:
+    std::deque<Arg> arguments;
 };
