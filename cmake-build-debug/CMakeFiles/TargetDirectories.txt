@@ -1,0 +1,3 @@
+/run/media/ech0/homework/Projects/luna/lunapmcpp/cmake-build-debug/CMakeFiles/lunapmcpp.dir
+/run/media/ech0/homework/Projects/luna/lunapmcpp/cmake-build-debug/CMakeFiles/edit_cache.dir
+/run/media/ech0/homework/Projects/luna/lunapmcpp/cmake-build-debug/CMakeFiles/rebuild_cache.dir
