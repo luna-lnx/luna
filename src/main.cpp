@@ -2,13 +2,14 @@
 #include <iostream>
 #include <unistd.h>
 #include "parseargs.hpp"
-#include "update.hpp"
 #include "logger.hpp"
+#include "update.hpp"
 #define VERS "v0.1"
 
 int main(int argc, char *argv[])
 {
-    if(getuid() != 0){
+    if (getuid() != 0)
+    {
         throw std::runtime_error("missing superuser permissions");
     }
     log(LogLevel::INFO, "{} {}", "hi");

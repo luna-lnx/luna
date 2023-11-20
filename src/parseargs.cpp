@@ -26,7 +26,7 @@ void ParseArgs::parseArgs(std::deque<std::string> argsin)
 {
 	for (int i = 0; i < arguments.size(); ++i)
 	{
-		std::deque<std::string> indivargs = split(arguments.at(i).names, "|");
+		std::deque<std::string> indivargs = splitstr(arguments.at(i).names, "|");
 		for (int j = 0; j < indivargs.size(); ++j)
 		{
 			if (argsin[0] == indivargs[j])
