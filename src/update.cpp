@@ -4,12 +4,10 @@
 #include <string>
 #include <thread>
 
-using namespace std;
-
 namespace update
 {
-void updateRepos(deque<string> args)
+void updateRepos(std::deque<std::string> args)
 {
-    Loader ld("updating repos", [](Loader &l) { this_thread::sleep_for(chrono::milliseconds(1024)); });
+    Loader ld("updating repos", [](Loader &l) { std::this_thread::sleep_for(std::chrono::milliseconds(1024)); });
 }
 } // namespace update

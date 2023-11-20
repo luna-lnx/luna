@@ -6,8 +6,6 @@
 #include <string>
 #include <thread>
 
-using namespace std;
-
 void Loader::doLoader()
 {
 	std::thread loader(
