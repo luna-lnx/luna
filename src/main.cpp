@@ -17,7 +17,6 @@ void initLogger()
     sinks.push_back(make_shared<spdlog::sinks::rotating_file_sink_mt>("/var/log/luna/log.txt", INT32_MAX, 3));
     sinks.push_back(make_shared<spdlog::sinks::stdout_color_sink_mt>());
     spdlog::register_logger(make_shared<spdlog::logger>("default", begin(sinks), end(sinks)));
-    spdlog::register_logger(make_shared<spdlog::logger>("error", begin(sinks), end(sinks)));
     spdlog::get("default")->set_pattern("%v");
 }
 
