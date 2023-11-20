@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     if(getuid() != 0){
         throw std::runtime_error("missing superuser permissions");
     }
-    log(LogLevel::INFO, "{}", "hi");
+    log(LogLevel::INFO, "{} {}", "hi");
     std::deque<std::string> arguments(argv + 1, argv + argc);
     ParseArgs pa;
     pa.addArgument("-u|--update|update", &update::updateRepos);
