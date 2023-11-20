@@ -1,12 +1,3 @@
-[submodule "lib/plog"]
-	path = lib/plog
-	url = https://github.com/SergiusTheBest/plog
-[submodule "lib/spdlog"]
-	path = lib/spdlog
-	url = https://github.com/gabime/spdlog
 [submodule "lib/cpr"]
 	path = lib/cpr
 	url = https://github.com/libcpr/cpr
-[submodule "lib/libansi"]
-	path = lib/libansi
-	url = https://github.com/srilakshmikanthanp/libansi

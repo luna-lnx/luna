@@ -22,5 +22,25 @@ template <typename... Args> void log(LogLevel lv, std::string fmt, Args... args)
 	{
 		formatted += sp.at(i) + sstr(argDeque.at(i));
 	}
+    std::string pretty = "";
+    switch(lv){
+        case WARN:
+            pretty += "warn";
+            break;
+        case ERR:
+            pretty += "error";
+            break;
+        case FATAL:
+            pretty += "fatal";
+            break;
+        default:
+            break;
+    }
+    if(pretty != ""){
+        pretty = "[" + pretty + "]";
+    }
 	std::cout << formatted << std::endl;
+    if(lv == LogLevel::FATAL){
+        throw std::runtime_error("a fatal exception has occurred. if you believe that this is not user error, run luna --doctor before making an issue.");
+    }
 }
