@@ -22,5 +22,5 @@ void log(LogLevel lv, std::string fmt, Args... args){
     for(int i = 0; i < sp.size()-1; ++i){
         formatted += sp.at(i) + sstr(argDeque.at(i));
     }
-    std::cout << formatted;
+    std::cout << formatted << std::endl;
 }
