@@ -8,7 +8,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_subdirectory(lib/cpr)
 
 include_directories(include)
-include_directories(lib/libansi/src/srilakshmikanthanp)
 
 file(GLOB SOURCES "src/*.cpp")
 message(Sources ${SOURCES})
