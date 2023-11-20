@@ -10,6 +10,7 @@ add_subdirectory(lib/cpr)
 include_directories(include)
 
 file(GLOB SOURCES "src/*.cpp")
+message(Sources ${SOURCES})
 add_executable(luna ${SOURCES})
 
 target_link_libraries(luna cpr)
