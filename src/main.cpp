@@ -14,9 +14,6 @@ int main(int argc, char *argv[])
         throw std::runtime_error("missing superuser permissions");
     }
     log(LogLevel::INFO, "luna - {}", VERS);
-    u_int8_t from[3] = {255, 255, 255};
-    u_int8_t to[3] = {111, 111, 111};
-    log(LogLevel::INFO, gradient("hello, world", from, to) + colorTerminate());
     std::deque<std::string> arguments(argv + 1, argv + argc);
     ParseArgs pa;
     pa.addArgument("-u|--update|update", &update::updateRepos);
