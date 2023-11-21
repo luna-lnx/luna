@@ -1,5 +1,5 @@
 #include "lutils.hpp"
-
+#include <math.h>
 std::deque<std::string> splitstr(std::string in, std::string del)
 {
 	std::deque<std::string> out;
@@ -20,6 +20,17 @@ std::string colorBg(u_int8_t r, u_int8_t g, u_int8_t b){
 }
 std::string bold(){
 	return "\x1b[1m";
+}
+std::string gradient(std::string input, u_int8_t fro[3], u_int8_t to[3]){
+	std::string builder = "";
+	for(int i = 0; i < input.length(); ++i){
+		// i am not mathing, ty chatgpt
+		int r = fro[0] + static_cast<int>(std::round((to[0] - fro[0]) * (i / static_cast<double>(input.length() - 1))));
+		int g = fro[1] + static_cast<int>(std::round((to[1] - fro[1]) * (i / static_cast<double>(input.length() - 1))));
+		int b = fro[2] + static_cast<int>(std::round((to[2] - fro[2]) * (i / static_cast<double>(input.length() - 1))));
+		builder += color(r, g, b) + input[i];
+	}
+	return builder;
 }
 std::string colorTerminate(){
 	return "\x1b[0m";
