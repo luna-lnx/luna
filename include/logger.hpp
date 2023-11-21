@@ -25,10 +25,10 @@ template <typename... Args> void log(LogLevel lv, std::string fmt, Args... args)
     std::string pretty = "";
     switch(lv){
         case WARN:
-            pretty += "warn";
+            pretty += colorBg(235, 80, 80) + "warn" + colorTerminate();
             break;
         case ERR:
-            pretty += "error";
+            pretty += color(255, 0, 0) + "error" + colorTerminate();
             break;
         case FATAL:
             pretty += color(255, 255, 255) + colorBg(235, 80, 80) + "fatal" + colorTerminate();
