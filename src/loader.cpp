@@ -28,6 +28,10 @@ void Loader::doLoader()
 	loader.join();
 }
 
+void Loader::setMessage(char *msg){
+	this->taskName = msg;
+}
+
 Loader::Loader(char *taskName, void (*task)(Loader &))
 {
 	this->taskName = taskName;
