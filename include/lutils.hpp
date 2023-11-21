@@ -22,6 +22,7 @@ template <typename... Args> std::string format(std::string fmt, Args... args)
 {
 	std::string fmt_target = "{}";
 	std::deque<std::string> argDeque;
+	// https://stackoverflow.com/a/60136761
 	([&]{
 		argDeque.push_back(sstr(args));
 	}(), ...);
