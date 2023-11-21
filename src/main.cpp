@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     {
         throw std::runtime_error("missing superuser permissions");
     }
-    log(LogLevel::FATAL, "{} {}", "hi", "hi");
+    log(LogLevel::INFO, "luna - {}", VERS);
     std::deque<std::string> arguments(argv + 1, argv + argc);
     ParseArgs pa;
     pa.addArgument("-u|--update|update", &update::updateRepos);

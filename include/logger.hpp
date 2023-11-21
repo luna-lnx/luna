@@ -15,13 +15,15 @@ enum LogLevel
 
 template <typename... Args> void log(LogLevel lv, std::string fmt, Args... args)
 {
+    std::string fmt_target = "{}";
 	std::deque<std::string> argDeque{args...};
-	std::deque<std::string> sp = splitstr(fmt, "{}");
-	std::string formatted = "";
-	for (int i = 0; i < sp.size() - 1; ++i)
-	{
-		formatted += sp.at(i) + sstr(argDeque.at(i));
-	}
+    size_t found = fmt.find("{}");
+    int index = 0;
+	while(found != std::string::npos){
+        fmt = fmt.replace(found, fmt_target.length(), argDeque.at(index));
+        found = fmt.find("{}");
+        ++index;
+    }
     std::string pretty = "";
     switch(lv){
         case WARN:
@@ -39,7 +41,7 @@ template <typename... Args> void log(LogLevel lv, std::string fmt, Args... args)
     if(pretty != ""){
         pretty = "[" + pretty + "] ";
     }
-    pretty = pretty + formatted;
+    pretty = pretty + fmt;
 	std::printf(pretty.c_str());
     std::cout << std::endl;
     if(lv == LogLevel::FATAL){
