@@ -33,7 +33,7 @@ template <typename... Args> void log(LogLevel lv, std::string fmt, Args... args)
             pretty += color(255, 0, 0) + "error" + colorTerminate();
             break;
         case FATAL:
-            pretty += color(255, 255, 255) + colorBg(235, 80, 80) + "fatal" + colorTerminate();
+            pretty += color(255, 255, 255) + colorBg(235, 80, 80) + bold() + "fatal" + colorTerminate();
             break;
         default:
             break;
