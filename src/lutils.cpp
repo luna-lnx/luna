@@ -25,7 +25,7 @@ std::string bold()
 {
 	return "\x1b[1m";
 }
-std::string gradient(std::string input, u_int8_t fro[3], u_int8_t to[3])
+std::string gradient(std::string input, u_int8_t fro[3], u_int8_t to[3], bool bg)
 {
 	std::string builder = "";
 	for (int i = 0; i < input.length(); ++i)
@@ -34,7 +34,7 @@ std::string gradient(std::string input, u_int8_t fro[3], u_int8_t to[3])
 		int r = fro[0] + static_cast<int>(std::round((to[0] - fro[0]) * (i / static_cast<double>(input.length() - 1))));
 		int g = fro[1] + static_cast<int>(std::round((to[1] - fro[1]) * (i / static_cast<double>(input.length() - 1))));
 		int b = fro[2] + static_cast<int>(std::round((to[2] - fro[2]) * (i / static_cast<double>(input.length() - 1))));
-		builder += color(r, g, b) + input[i];
+		builder += (bg ? colorBg(r, g, b) : color(r, g, b)) + input[i];
 	}
 	return builder;
 }

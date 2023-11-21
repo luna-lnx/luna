@@ -6,7 +6,6 @@ class Loader
 {
   public:
     Loader(char *taskName, void (*task)(Loader &));
-    void Loader::setMessage(char *msg);
 
   private:
     char *taskName;
