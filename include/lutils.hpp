@@ -10,6 +10,7 @@ std::string colorBg(u_int8_t r, u_int8_t g, u_int8_t b);
 std::string gradient(std::string input, u_int8_t fro[3], u_int8_t to[3]);
 std::string bold();
 std::string colorTerminate();
+// what does this do again lmao
 template <typename T> std::string sstr(const T &val)
 {
 	std::ostringstream sstr;
