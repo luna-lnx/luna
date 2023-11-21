@@ -31,15 +31,17 @@ template <typename... Args> void log(LogLevel lv, std::string fmt, Args... args)
             pretty += "error";
             break;
         case FATAL:
-            pretty += "fatal";
+            pretty += color(255, 255, 255) + colorBg(235, 80, 80) + "fatal" + colorTerminate();
             break;
         default:
             break;
     }
     if(pretty != ""){
-        pretty = "[" + pretty + "]";
+        pretty = "[" + pretty + "] ";
     }
-	std::cout << formatted << std::endl;
+    pretty = pretty + formatted;
+	std::printf(pretty.c_str());
+    std::cout << std::endl;
     if(lv == LogLevel::FATAL){
         throw std::runtime_error("a fatal exception has occurred. if you believe that this is not user error, run luna --doctor before making an issue.");
     }
