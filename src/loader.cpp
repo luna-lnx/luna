@@ -1,4 +1,5 @@
 #include "loader.hpp"
+#include "lutils.hpp"
 #include <atomic>
 #include <chrono>
 #include <iostream>
@@ -8,29 +9,35 @@
 
 void Loader::doLoader()
 {
-	std::thread loader(
-		[this](std::atomic<bool> &stopping) {
-			const char *icons[4] = {"\\", "|", "/", "-"};
-			while (!stopping)
-			{
-				for (int i = 0; i < 4; ++i)
-				{
-					std::cout << "\r" << icons[i] << " " << taskName << std::flush;
-					std::this_thread::sleep_for(std::chrono::milliseconds(150));
-				}
-			}
-			std::cout << "\r" << taskName << "... done!" << std::flush << std::endl;
-		},
-		std::ref(stopping));
+    std::thread loader(
+        [this](std::atomic<bool> &stopping) {
+            const char *icons[4] = {"\\", "|", "/", "-"};
+            while (!stopping)
+            {
+                for (int i = 0; i < 4; ++i)
+                {
+                    std::cout << "\r" << icons[i] << " " << taskName
+                              << format("{}", this->progress != "" ? format("({})", this->progress) : "") << std::flush;
+                    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+                }
+            }
+            std::cout << "\r" << taskName << "... done!" << std::flush << std::endl;
+        },
+        std::ref(stopping));
 
-	task(*this);
-	stopping.store(true);
-	loader.join();
+    task(*this);
+    stopping.store(true);
+    loader.join();
 }
 
-Loader::Loader(char *taskName, void (*task)(Loader &))
+void Loader::setProgress(std::string progress)
 {
-	this->taskName = taskName;
-	this->task = task;
-	doLoader();
+    this->progress = progress;
+}
+
+Loader::Loader(std::string taskName, void (*task)(Loader &))
+{
+    this->taskName = taskName;
+    this->task = task;
+    doLoader();
 }
