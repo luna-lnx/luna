@@ -21,13 +21,16 @@ template <typename T> std::string sstr(const T &val)
 template <typename... Args> std::string format(std::string fmt, Args... args)
 {
 	std::string fmt_target = "{}";
-	std::deque<std::string> argDeque{args...};
-	size_t found = fmt.find("{}");
+	std::deque<std::string> argDeque;
+	([&]{
+		argDeque.push_back(sstr(args));
+	}(), ...);
+	size_t found = fmt.find(fmt_target);
 	int index = 0;
 	while (found != std::string::npos)
 	{
 		fmt = fmt.replace(found, fmt_target.length(), argDeque.at(index));
-		found = fmt.find("{}");
+		found = fmt.find(fmt_target);
 		++index;
 	}
 	return fmt;
