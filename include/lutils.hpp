@@ -18,3 +18,17 @@ template <typename T> std::string sstr(const T &val)
 	(sstr << std::dec << val);
 	return sstr.str();
 }
+template <typename... Args> std::string format(std::string fmt, Args... args)
+{
+	std::string fmt_target = "{}";
+	std::deque<std::string> argDeque{args...};
+	size_t found = fmt.find("{}");
+	int index = 0;
+	while (found != std::string::npos)
+	{
+		fmt = fmt.replace(found, fmt_target.length(), argDeque.at(index));
+		found = fmt.find("{}");
+		++index;
+	}
+	return fmt;
+}

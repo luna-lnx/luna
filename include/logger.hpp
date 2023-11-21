@@ -15,16 +15,7 @@ enum LogLevel
 
 template <typename... Args> void log(LogLevel lv, std::string fmt, Args... args)
 {
-	std::string fmt_target = "{}";
-	std::deque<std::string> argDeque{args...};
-	size_t found = fmt.find("{}");
-	int index = 0;
-	while (found != std::string::npos)
-	{
-		fmt = fmt.replace(found, fmt_target.length(), argDeque.at(index));
-		found = fmt.find("{}");
-		++index;
-	}
+	std::string formatted = format(fmt, args...);
 	std::string pretty = "";
 	switch (lv)
 	{
@@ -44,7 +35,7 @@ template <typename... Args> void log(LogLevel lv, std::string fmt, Args... args)
 	{
 		pretty = "[" + pretty + "] ";
 	}
-	pretty = pretty + fmt;
+	pretty = pretty + formatted;
 	std::cout << pretty.c_str() << std::endl;
 
 	if (lv == LogLevel::FATAL)
