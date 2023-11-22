@@ -1,10 +1,10 @@
+#include "logger.hpp"
+#include "lutils.hpp"
+#include "parseargs.hpp"
+#include "update.hpp"
 #include <deque>
 #include <iostream>
 #include <unistd.h>
-#include "parseargs.hpp"
-#include "logger.hpp"
-#include "update.hpp"
-#include "lutils.hpp"
 #define VERS "v0.1"
 
 int main(int argc, char *argv[])

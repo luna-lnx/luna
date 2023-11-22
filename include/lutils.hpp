@@ -13,26 +13,24 @@ std::string colorTerminate();
 // what does this do again lmao
 template <typename T> std::string sstr(const T &val)
 {
-	std::ostringstream sstr;
-	// fold expression
-	(sstr << std::dec << val);
-	return sstr.str();
+    std::ostringstream sstr;
+    // fold expression
+    (sstr << std::dec << val);
+    return sstr.str();
 }
 template <typename... Args> std::string format(std::string fmt, Args... args)
 {
-	std::string fmt_target = "{}";
-	std::deque<std::string> argDeque;
-	// https://stackoverflow.com/a/60136761
-	([&]{
-		argDeque.push_back(sstr(args));
-	}(), ...);
-	size_t found = fmt.find(fmt_target);
-	int index = 0;
-	while (found != std::string::npos)
-	{
-		fmt = fmt.replace(found, fmt_target.length(), argDeque.at(index));
-		found = fmt.find(fmt_target);
-		++index;
-	}
-	return fmt;
+    std::string fmt_target = "{}";
+    std::deque<std::string> argDeque;
+    // https://stackoverflow.com/a/60136761
+    ([&] { argDeque.push_back(sstr(args)); }(), ...);
+    size_t found = fmt.find(fmt_target);
+    int index = 0;
+    while (found != std::string::npos)
+    {
+        fmt = fmt.replace(found, fmt_target.length(), argDeque.at(index));
+        found = fmt.find(fmt_target);
+        ++index;
+    }
+    return fmt;
 }

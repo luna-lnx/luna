@@ -8,7 +8,7 @@ class Arg
   public:
     using Func = void (*)(std::deque<std::string>);
     std::string names;
-    std::variant<Func, bool*> value;
+    std::variant<Func, bool *> value;
     Arg(std::string names, void (*func)(std::deque<std::string>));
     Arg(std::string names, bool *val);
 };

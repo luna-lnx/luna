@@ -30,7 +30,9 @@ void updateRepos(std::deque<std::string> args)
                 {
                     repoOut << r.text;
                     repoOut.close();
-                }else{
+                }
+                else
+                {
                     log(LogLevel::FATAL, "repoOut not open");
                 }
             }
