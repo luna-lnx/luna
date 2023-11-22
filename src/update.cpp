@@ -29,6 +29,7 @@ void updateRepos(std::deque<std::string> args)
         }else{
             log(LogLevel::FATAL, "reposListFile not open");
         }
+        reposListFile.close();
     });
 }
 } // namespace update
