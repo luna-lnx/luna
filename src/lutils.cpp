@@ -13,6 +13,23 @@ std::deque<std::string> splitstr(std::string in, std::string del)
     out.push_front(in);
     return out;
 }
+std::string joinstr(std::deque<std::string> in, std::string delim){
+    std::string out;
+    for(int i = 0; i < in.size(); ++i){
+        out += in.at(i);
+        if(i < in.size()-1)
+            out += delim;
+    }
+    return out;
+}
+std::string replace(std::string str, const std::string& from, const std::string& to) {
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length();
+    }
+    return str;
+}
 std::string color(u_int8_t r, u_int8_t g, u_int8_t b)
 {
     return "\x1b[38;2;" + std::to_string(r) + ";" + std::to_string(g) + ";" + std::to_string(b) + "m";

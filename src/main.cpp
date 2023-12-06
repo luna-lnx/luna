@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     log(LogLevel::INFO, "luna - {}", VERS);
     std::deque<std::string> arguments(argv + 1, argv + argc);
     ParseArgs pa;
-    pa.addArgument("-u|--update|update", &update::updateRepos);
+    pa.addArgument("-u|--update|update", "updates the repos", &update::updateRepos);
     pa.parseArgs(arguments);
     return 0;
 }
