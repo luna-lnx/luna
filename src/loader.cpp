@@ -17,8 +17,10 @@ void Loader::doLoader()
                 for (int i = 0; i < 4; ++i)
                 {
                     std::cout << "\r" << icons[i] << " " << taskName
-                              << format(" {}", this->progress != "" ? format("({})", this->progress) : "")
-                              << std::flush;
+                              << format(" {}", this->progress != "" ? format("({})", this->progress) : "");
+                    std::cout.flush();
+                    // Clear the current line
+                    std::cout << "\r\x1b[K";
                     std::this_thread::sleep_for(std::chrono::milliseconds(150));
                 }
             }

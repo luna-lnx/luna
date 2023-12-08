@@ -24,6 +24,12 @@ void updateRepos(std::deque<std::string> args)
             {
                 l.setProgress(format("{}/{}", i + 1, reposList.size()));
                 cpr::Response r = cpr::Get(cpr::Url{reposList.at(i)});
+                if (r.error.code != cpr::ErrorCode::OK)
+                    log(LogLevel::FATAL, "failed to get {} because: {}",
+                        r.url.str().substr(r.url.str().find_last_of("/") + 1), r.error.message);
+                if (r.status_code != 200)
+                    log(LogLevel::FATAL, "failed to get {} because request failed with response code: {}",
+                        r.url.str().substr(r.url.str().find_last_of("/") + 1), r.status_code);
                 std::ofstream repoOut(
                     format("/var/lib/luna/repos.d/{}", r.url.str().substr(r.url.str().find_last_of("/") + 1)));
                 if (repoOut.is_open())
