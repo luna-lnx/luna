@@ -13,41 +13,49 @@ namespace update
 {
 void updateRepos(std::deque<std::string> args)
 {
-    Loader ld("updating repos", [](Loader &l) {
-        std::ifstream reposListFile("/etc/luna/repos.conf");
-        if (reposListFile.is_open())
-        {
-            std::string tmp;
-            reposListFile >> tmp;
-            std::deque<std::string> reposList = splitstr(tmp, "\n");
-            for (int i = 0; i < reposList.size(); ++i)
-            {
-                l.setProgress(format("{}/{}", i + 1, reposList.size()));
-                cpr::Response r = cpr::Get(cpr::Url{reposList.at(i)});
-                if (r.error.code != cpr::ErrorCode::OK)
-                    log(LogLevel::FATAL, "failed to get {} because: {}",
-                        r.url.str().substr(r.url.str().find_last_of("/") + 1), r.error.message);
-                if (r.status_code != 200)
-                    log(LogLevel::FATAL, "failed to get {} because request failed with response code: {}",
-                        r.url.str().substr(r.url.str().find_last_of("/") + 1), r.status_code);
-                std::ofstream repoOut(
-                    format("/var/lib/luna/repos.d/{}", r.url.str().substr(r.url.str().find_last_of("/") + 1)));
-                if (repoOut.is_open())
-                {
-                    repoOut << r.text;
-                    repoOut.close();
-                }
-                else
-                {
-                    log(LogLevel::FATAL, "repoOut not open");
-                }
-            }
-        }
-        else
-        {
-            log(LogLevel::FATAL, "reposListFile not open");
-        }
-        reposListFile.close();
-    });
+	Loader ld("updating repos", [](Loader &l) {
+		std::ifstream reposListFile("/etc/luna/repos.conf");
+		if (reposListFile.is_open())
+		{
+			std::string tmp;
+			reposListFile >> tmp;
+			std::deque<std::string> reposList = splitstr(tmp, "\n");
+			for (int i = 0; i < reposList.size(); ++i)
+			{
+				l.setProgress(format("{}/{}", i + 1, reposList.size()));
+				cpr::Response r = cpr::Get(cpr::Url{reposList.at(i)});
+				if (r.error.code != cpr::ErrorCode::OK)
+				{
+					l.fail();
+					log(LogLevel::FATAL, "failed to get {} because: {}",
+						r.url.str().substr(r.url.str().find_last_of("/") + 1), r.error.message);
+				}
+				if (r.status_code != 200)
+				{
+					l.fail();
+					log(LogLevel::FATAL, "failed to get {} because request failed with response code: {}",
+						r.url.str().substr(r.url.str().find_last_of("/") + 1), r.status_code);
+				}
+				std::ofstream repoOut(
+					format("/var/lib/luna/repos.d/{}", r.url.str().substr(r.url.str().find_last_of("/") + 1)));
+				if (repoOut.is_open())
+				{
+					repoOut << r.text;
+					repoOut.close();
+				}
+				else
+				{
+					l.fail();
+					log(LogLevel::FATAL, "repoOut not open");
+				}
+			}
+		}
+		else
+		{
+			l.fail();
+			log(LogLevel::FATAL, "reposListFile not open");
+		}
+		reposListFile.close();
+	});
 }
 } // namespace update

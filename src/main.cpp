@@ -9,14 +9,14 @@
 
 int main(int argc, char *argv[])
 {
-    if (getuid() != 0)
-    {
-        throw std::runtime_error("missing superuser permissions");
-    }
-    log(LogLevel::INFO, "luna - {}", VERS);
-    std::deque<std::string> arguments(argv + 1, argv + argc);
-    ParseArgs pa;
-    pa.addArgument("-u|--update|update", "updates the repos", &update::updateRepos);
-    pa.parseArgs(arguments);
-    return 0;
+	if (getuid() != 0)
+	{
+		throw std::runtime_error("missing superuser permissions");
+	}
+	log(LogLevel::INFO, "luna - {}", VERS);
+	std::deque<std::string> arguments(argv + 1, argv + argc);
+	ParseArgs pa;
+	pa.addArgument("-u|--update|update", "updates the repos", &update::updateRepos);
+	pa.parseArgs(arguments);
+	return 0;
 }

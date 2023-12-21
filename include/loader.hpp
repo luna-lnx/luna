@@ -5,13 +5,15 @@
 class Loader
 {
   public:
-    Loader(std::string taskName, void (*task)(Loader &));
-    void setProgress(std::string progress);
+	Loader(std::string taskName, void (*task)(Loader &));
+	void setProgress(std::string progress);
+	void fail();
 
   private:
-    std::string taskName;
-    std::string progress = "";
-    void (*task)(Loader &);
-    std::atomic<bool> stopping = false;
-    void doLoader();
+	std::string taskName;
+	std::string progress = "";
+	void (*task)(Loader &);
+	std::atomic<bool> stopping = false;
+	std::atomic<bool> failing = false;
+	void doLoader();
 };
