@@ -7,6 +7,7 @@
 std::deque<std::string> splitstr(std::string in, std::string del);
 std::string joinstr(std::deque<std::string> in, std::string delim);
 std::string replace(std::string str, const std::string &from, const std::string &to);
+std::string trim(const std::string s);
 std::string color(u_int8_t r, u_int8_t g, u_int8_t b);
 std::string colorBg(u_int8_t r, u_int8_t g, u_int8_t b);
 std::string gradient(std::string input, u_int8_t fro[3], u_int8_t to[3], bool bg);

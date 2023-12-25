@@ -1,9 +1,9 @@
 #pragma once
 #include "lutils.hpp"
 #include <deque>
+#include <functional>
 #include <iostream>
 #include <string>
-
 enum LogLevel
 {
 	DEBUG,
@@ -43,4 +43,26 @@ template <typename... Args> void log(LogLevel lv, std::string fmt, Args... args)
 		throw std::runtime_error("a fatal exception has occurred. if you believe that this is not user error, run luna "
 								 "--doctor before making an issue.");
 	}
+}
+template <typename... Args> void log(bool shouldLog, LogLevel lv, std::string fmt, Args... args)
+{
+	if (shouldLog)
+	{
+		log(lv, fmt, args...);
+	}
+}
+template <typename... Args>
+void log(bool shouldLog, std::function<void()> task, LogLevel lv, std::string fmt, Args... args)
+{
+	if (shouldLog)
+	{
+		task();
+		log(lv, fmt, args...);
+	}
+}
+
+template <typename... Args> void log(std::function<void()> task, LogLevel lv, std::string fmt, Args... args)
+{
+	task();
+	log(lv, fmt, args...);
 }

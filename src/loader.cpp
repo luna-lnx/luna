@@ -16,7 +16,7 @@ void Loader::doLoader()
 			{
 				if (failing)
 				{
-					std::cout << "\r" << taskName << "... failed!" << std::flush << std::endl;
+					std::cout << std::flush << std::endl;
 					return;
 				}
 				for (int i = 0; i < 4; ++i)

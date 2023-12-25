@@ -17,25 +17,22 @@ void updateRepos(std::deque<std::string> args)
 		std::ifstream reposListFile("/etc/luna/repos.conf");
 		if (reposListFile.is_open())
 		{
-			std::string tmp;
-			reposListFile >> tmp;
+			std::stringstream buffer;
+			buffer << reposListFile.rdbuf();
+			std::string tmp = trim(buffer.str());
 			std::deque<std::string> reposList = splitstr(tmp, "\n");
 			for (int i = 0; i < reposList.size(); ++i)
 			{
-				l.setProgress(format("{}/{}", i + 1, reposList.size()));
+				l.setProgress(format("{}/{} ({})", i + 1, reposList.size(), reposList.at(i)));
 				cpr::Response r = cpr::Get(cpr::Url{reposList.at(i)});
-				if (r.error.code != cpr::ErrorCode::OK)
-				{
-					l.fail();
-					log(LogLevel::FATAL, "failed to get {} because: {}",
-						r.url.str().substr(r.url.str().find_last_of("/") + 1), r.error.message);
-				}
-				if (r.status_code != 200)
-				{
-					l.fail();
-					log(LogLevel::FATAL, "failed to get {} because request failed with response code: {}",
-						r.url.str().substr(r.url.str().find_last_of("/") + 1), r.status_code);
-				}
+				log(
+					r.error.code != cpr::ErrorCode::OK, [&l]() { l.fail(); }, LogLevel::FATAL,
+					"failed to get {} because: {}", r.url.str().substr(r.url.str().find_last_of("/") + 1),
+					r.error.message);
+				log(
+					r.status_code != 200, [&l]() { l.fail(); }, LogLevel::FATAL,
+					"failed to get {} because request failed with response code: {}",
+					r.url.str().substr(r.url.str().find_last_of("/") + 1), r.status_code);
 				std::ofstream repoOut(
 					format("/var/lib/luna/repos.d/{}", r.url.str().substr(r.url.str().find_last_of("/") + 1)));
 				if (repoOut.is_open())
@@ -45,15 +42,13 @@ void updateRepos(std::deque<std::string> args)
 				}
 				else
 				{
-					l.fail();
-					log(LogLevel::FATAL, "repoOut not open");
+					log([&l]() { l.fail(); }, LogLevel::FATAL, "repoOut not open");
 				}
 			}
 		}
 		else
 		{
-			l.fail();
-			log(LogLevel::FATAL, "reposListFile not open");
+			log([&l]() { l.fail(); }, LogLevel::FATAL, "reposListFile not open");
 		}
 		reposListFile.close();
 	});

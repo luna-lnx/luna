@@ -1,16 +1,23 @@
 #include "lutils.hpp"
 #include <cmath>
+#include <algorithm>
+#include <string>
 
-std::deque<std::string> splitstr(std::string in, std::string del)
+std::deque<std::string> splitstr(const std::string in, const std::string del)
 {
 	std::deque<std::string> out;
-	size_t pos = 0;
-	while ((pos = in.find(del)) != std::string::npos)
+	size_t start = 0;
+	size_t end = in.find(del);
+
+	while (end != std::string::npos)
 	{
-		out.push_front(in.substr(0, pos));
-		in.erase(0, pos + del.length());
+		out.push_back(in.substr(start, end - start));
+		start = end + del.length();
+		end = in.find(del, start);
 	}
-	out.push_front(in);
+
+	out.push_back(in.substr(start));
+
 	return out;
 }
 std::string joinstr(std::deque<std::string> in, std::string delim)
@@ -33,6 +40,18 @@ std::string replace(std::string str, const std::string &from, const std::string 
 		start_pos += to.length();
 	}
 	return str;
+}
+std::string trim(const std::string s)
+{
+    auto start = std::find_if_not(s.begin(), s.end(), [](unsigned char ch) {
+        return std::isspace(ch);
+    });
+
+    auto end = std::find_if_not(s.rbegin(), s.rend(), [](unsigned char ch) {
+        return std::isspace(ch);
+    }).base();
+
+    return (start < end ? std::string(start, end) : std::string());
 }
 std::string color(u_int8_t r, u_int8_t g, u_int8_t b)
 {
