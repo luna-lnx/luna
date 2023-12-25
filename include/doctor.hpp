@@ -1,6 +1,4 @@
 namespace doctor
 {
-    void runDoctor(){
-
-    }
+    void runDoctor(std::deque<std::string> args);
 } // namespace doctor

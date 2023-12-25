@@ -2,6 +2,7 @@
 #include "lutils.hpp"
 #include "parseargs.hpp"
 #include "update.hpp"
+#include "doctor.hpp"
 #include <deque>
 #include <iostream>
 #include <unistd.h>
@@ -17,6 +18,7 @@ int main(int argc, char *argv[])
 	std::deque<std::string> arguments(argv + 1, argv + argc);
 	ParseArgs pa;
 	pa.addArgument("-u|--update|update", "updates the repos", &update::updateRepos);
+	pa.addArgument("-d|--doctor|doctor", "performs a lunapm health check", &doctor::runDoctor);
 	pa.parseArgs(arguments);
 	return 0;
 }

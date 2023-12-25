@@ -23,7 +23,7 @@ void updateRepos(std::deque<std::string> args)
 			std::deque<std::string> reposList = splitstr(tmp, "\n");
 			for (int i = 0; i < reposList.size(); ++i)
 			{
-				l.setProgress(format("{}/{} ({})", i + 1, reposList.size(), reposList.at(i)));
+				l.setProgress(format("{}/{}", i + 1, reposList.size()));
 				cpr::Response r = cpr::Get(cpr::Url{reposList.at(i)});
 				log(
 					r.error.code != cpr::ErrorCode::OK, [&l]() { l.fail(); }, LogLevel::FATAL,
