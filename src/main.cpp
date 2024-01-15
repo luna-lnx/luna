@@ -10,7 +10,7 @@
 
 int main(int argc, char *argv[])
 {
-	std::deque<std::string> arguments(argv + 1, argv + argc);
+	std::vector<std::string> arguments(argv + 1, argv + argc);
 	if (getuid() != 0)
 	{
 		log(LogLevel::WARN, "missing permissions. attempting to rerun as root...");

@@ -25,23 +25,23 @@ void ParseArgs::addArgument(std::string names, std::string desc, bool *val)
 {
 	arguments.push_back(Arg(names, desc, val));
 }
-void ParseArgs::parseArgs(std::deque<std::string> argsin)
+void ParseArgs::parseArgs(std::vector<std::string> argsin)
 {
 	for (int i = 0; i < arguments.size(); ++i)
 	{
 		Arg arg = arguments.at(i);
 		if (argsin[0] == "-h")
 		{
-			std::deque<std::string> namessplit = splitstr(arg.names, "|");
+			std::vector<std::string> namessplit = splitstr(arg.names, "|");
 			namessplit.back() = "or " + namessplit.back();
 			log(LogLevel::INFO, "{}     {}", joinstr(namessplit, ", "), arguments.at(i).desc);
 		}
-		std::deque<std::string> indivargs = splitstr(arguments.at(i).names, "|");
+		std::vector<std::string> indivargs = splitstr(arguments.at(i).names, "|");
 		for (int j = 0; j < indivargs.size(); ++j)
 		{
 			if (argsin[0] == indivargs[j])
 			{
-				argsin.pop_front();
+				argsin.erase(argsin.begin());
 				if (std::holds_alternative<Arg::Func>(arg.value))
 				{
 					std::get<Arg::Func>(arg.value)(argsin);

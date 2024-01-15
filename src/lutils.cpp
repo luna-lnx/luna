@@ -2,10 +2,11 @@
 #include <cmath>
 #include <algorithm>
 #include <string>
+#include <vector>
 
-std::deque<std::string> splitstr(const std::string in, const std::string del)
+std::vector<std::string> splitstr(const std::string in, const std::string del)
 {
-	std::deque<std::string> out;
+	std::vector<std::string> out;
 	size_t start = 0;
 	size_t end = in.find(del);
 
@@ -20,7 +21,7 @@ std::deque<std::string> splitstr(const std::string in, const std::string del)
 
 	return out;
 }
-std::string joinstr(std::deque<std::string> in, std::string delim)
+std::string joinstr(std::vector<std::string> in, std::string delim)
 {
 	std::string out;
 	for (int i = 0; i < in.size(); ++i)

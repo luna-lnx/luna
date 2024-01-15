@@ -1,11 +1,11 @@
 #pragma once
 
-#include <deque>
+#include <vector>
 #include <sstream>
 #include <string>
 
-std::deque<std::string> splitstr(std::string in, std::string del);
-std::string joinstr(std::deque<std::string> in, std::string delim);
+std::vector<std::string> splitstr(std::string in, std::string del);
+std::string joinstr(std::vector<std::string> in, std::string delim);
 std::string replace(std::string str, const std::string &from, const std::string &to);
 std::string trim(const std::string s);
 std::string color(u_int8_t r, u_int8_t g, u_int8_t b);
@@ -25,7 +25,7 @@ template <typename T> std::string sstr(const T &val)
 template <typename... Args> std::string format(std::string fmt, Args... args)
 {
 	std::string fmt_target = "{}";
-	std::deque<std::string> argDeque;
+	std::vector<std::string> argDeque;
 	// https://stackoverflow.com/a/60136761
 	([&] { argDeque.push_back(sstr(args)); }(), ...);
 	size_t found = fmt.find(fmt_target);

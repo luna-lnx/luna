@@ -4,5 +4,5 @@
 
 namespace update
 {
-void updateRepos(std::deque<std::string> args);
+void updateRepos(std::vector<std::string> args);
 }

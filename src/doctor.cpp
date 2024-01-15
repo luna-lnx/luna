@@ -5,7 +5,7 @@
 #include <iostream>
 namespace doctor
 {
-void runDoctor(std::deque<std::string> args)
+void runDoctor(std::vector<std::string> args)
 {
 	if (!std::filesystem::exists("/etc/luna/repos.conf"))
 	{

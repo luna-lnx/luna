@@ -11,7 +11,7 @@
 
 namespace update
 {
-void updateRepos(std::deque<std::string> args)
+void updateRepos(std::vector<std::string> args)
 {
 	Loader ld("updating repos", [](Loader &l) {
 		std::ifstream reposListFile("/etc/luna/repos.conf");
@@ -20,7 +20,7 @@ void updateRepos(std::deque<std::string> args)
 			std::stringstream buffer;
 			buffer << reposListFile.rdbuf();
 			std::string tmp = trim(buffer.str());
-			std::deque<std::string> reposList = splitstr(tmp, "\n");
+			std::vector<std::string> reposList = splitstr(tmp, "\n");
 			for (int i = 0; i < reposList.size(); ++i)
 			{
 				l.setProgress(format("{}/{}", i + 1, reposList.size()));
