@@ -86,7 +86,7 @@ void privEsc()
 	if (getuid() != 0)
 	{
 		std::vector<std::string> arguments(ARGV + 1, ARGV + ARGC);
-		log(LogLevel::WARN, "missing permissions. attempting to rerun as {}root{}...", color(150, 0, 0) + bold(), /*"root"*/ colorTerminate());
+		log(LogLevel::WARN, "missing permissions. attempting to rerun as {}root{}...", color(200, 145, 145) + bold(), /*"root"*/ colorTerminate());
 		system(format("su -c \"{} {}\"", ARGV[0], joinstr(arguments, " ")).c_str());
 		exit(0);
 	}
