@@ -33,8 +33,8 @@ void runDoctor(std::vector<std::string> args)
 			reposConfOut << r.text;
 			reposConfOut.close();
 		}
-		log(issues > 0, LogLevel::INFO, "found {} issue(s)", issues);
-		log(issues == 0, LogLevel::INFO, "found no issues (yay)");
+		log(issues > 0, LogLevel::INFO, "found {}{}{} issue(s)", color(200, 145, 145) + bold(), issues, colorTerminate());
+		log(issues == 0, LogLevel::INFO, "found {}no{} issues (yay)", color(125, 255, 125) + bold(), colorTerminate());
 	});
 }
 } // namespace doctor
