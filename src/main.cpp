@@ -19,7 +19,6 @@ int main(int argc, char *argv[])
 	ParseArgs pa;
 	pa.addArgument("-u|--update|update", "updates the repos", &update::updateRepos);
 	pa.addArgument("-d|--doctor|doctor", "performs a lunapm health check", &doctor::runDoctor);
-	pa.checkUnrecognized(arguments);
 	pa.parseArgs(arguments);
 	return 0;
 }
