@@ -25,6 +25,15 @@ void ParseArgs::addArgument(std::string names, std::string desc, bool *val)
 {
 	arguments.push_back(Arg(names, desc, val));
 }
+bool ParseArgs::hasArgument(std::string arg){
+	for(int i = 0; i < arguments.size(); ++i){
+		std::vector<std::string> indivargs = splitstr(arguments.at(i).names, "|");
+		if(std::find(indivargs.begin(), indivargs.end(), arg) != indivargs.end()){
+			return true;
+		}
+	}
+	return false;
+}
 void ParseArgs::parseArgs(std::vector<std::string> argsin)
 {
 	for (int i = 0; i < arguments.size(); ++i)
