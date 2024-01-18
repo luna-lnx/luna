@@ -14,12 +14,7 @@ int main(int argc, char *argv[])
 	ParseArgs pa;
 	pa.addArgument("-u|--update|update", "updates the repos", &update::updateRepos);
 	pa.addArgument("-d|--doctor|doctor", "performs a lunapm health check", &doctor::runDoctor);
-	for(int i = 0; i < arguments.size(); ++i){
-		if(!pa.hasArgument(arguments.at(i))){
-			// TODO: Make this tolerant so you can actually install packages
-			log(LogLevel::FATAL, "unrecognized argument {}", arguments.at(i));
-		}
-	}
+	pa.checkUnrecognized(arguments);
 	if (getuid() != 0)
 	{
 		log(LogLevel::WARN, "missing permissions. attempting to rerun as root...");
