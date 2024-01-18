@@ -2,6 +2,7 @@
 #include "loader.hpp"
 #include "logger.hpp"
 #include "lutils.hpp"
+#include "parseargs.hpp"
 #include <chrono>
 #include <deque>
 #include <fstream>
@@ -13,6 +14,9 @@ namespace update
 {
 void updateRepos(std::vector<std::string> args)
 {
+	ParseArgs pa;
+	pa.checkUnrecognized(args);
+	privEsc();
 	Loader ld("updating repos", [](Loader &l) {
 		std::ifstream reposListFile("/etc/luna/repos.conf");
 		if (reposListFile.is_open())
