@@ -20,7 +20,6 @@ int main(int argc, char *argv[])
 	pa.addArgument("-u|--update|update", "updates the repos", &update::updateRepos);
 	pa.addArgument("-d|--doctor|doctor", "performs a lunapm health check", &doctor::runDoctor);
 	pa.checkUnrecognized(arguments);
-	log(LogLevel::INFO, "luna - {}", VERS);
 	pa.parseArgs(arguments);
 	return 0;
 }
