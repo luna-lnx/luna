@@ -33,7 +33,7 @@ void runDoctor(std::vector<std::string> args)
 			reposConfOut << r.text;
 			reposConfOut.close();
 		}
-		log(issues > 0, LogLevel::INFO, "found {}{}{} issue(s)", color(255, 145, 145) + bold(), issues, colorTerminate());
+		log(issues > 0, LogLevel::INFO, "fixed {}{}{} issue(s)", color(255, 145, 145) + bold(), issues, colorTerminate());
 		log(issues == 0, LogLevel::INFO, "found {}no{} issues (yay)", color(125, 255, 125) + bold(), colorTerminate());
 	});
 }
