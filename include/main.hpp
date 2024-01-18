@@ -1,2 +1,2 @@
-int ARGC;
-char *ARGV[];
+extern int ARGC;
+extern char **ARGV;

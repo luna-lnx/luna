@@ -1,6 +1,8 @@
 #include "cpr/cpr.h"
 #include "loader.hpp"
 #include "logger.hpp"
+#include "parseargs.hpp"
+#include "lutils.hpp"
 #include <filesystem>
 #include <iostream>
 #include <string>
@@ -9,6 +11,9 @@ namespace doctor
 {
 void runDoctor(std::vector<std::string> args)
 {
+	ParseArgs pa;
+	pa.checkUnrecognized(args);
+	privEsc();
 	Loader("running doctor", [](Loader &l) {
 		int issues = 0;
 		if (!std::filesystem::exists("/etc/luna/repos.conf"))
