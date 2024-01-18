@@ -1,9 +1,11 @@
 #include "lutils.hpp"
-#include <cmath>
+#include "logger.hpp"
+#include "main.hpp"
 #include <algorithm>
+#include <cmath>
 #include <string>
+#include <unistd.h>
 #include <vector>
-
 std::vector<std::string> splitstr(const std::string in, const std::string del)
 {
 	std::vector<std::string> out;
@@ -44,15 +46,11 @@ std::string replace(std::string str, const std::string &from, const std::string 
 }
 std::string trim(const std::string s)
 {
-    auto start = std::find_if_not(s.begin(), s.end(), [](unsigned char ch) {
-        return std::isspace(ch);
-    });
+	auto start = std::find_if_not(s.begin(), s.end(), [](unsigned char ch) { return std::isspace(ch); });
 
-    auto end = std::find_if_not(s.rbegin(), s.rend(), [](unsigned char ch) {
-        return std::isspace(ch);
-    }).base();
+	auto end = std::find_if_not(s.rbegin(), s.rend(), [](unsigned char ch) { return std::isspace(ch); }).base();
 
-    return (start < end ? std::string(start, end) : std::string());
+	return (start < end ? std::string(start, end) : std::string());
 }
 std::string color(u_int8_t r, u_int8_t g, u_int8_t b)
 {
@@ -82,4 +80,14 @@ std::string gradient(std::string input, u_int8_t fro[3], u_int8_t to[3], bool bg
 std::string colorTerminate()
 {
 	return "\x1b[0m";
+}
+void privEsc()
+{
+	if (getuid() != 0)
+	{
+		std::vector<std::string> arguments(ARGV + 1, ARGV + ARGC);
+		log(LogLevel::WARN, "missing permissions. attempting to rerun as root...");
+		system(format("su -c \"{} {}\"", ARGV[0], joinstr(arguments, " ")).c_str());
+		exit(0);
+	}
 }

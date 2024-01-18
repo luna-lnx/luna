@@ -1,0 +1,2 @@
+int ARGC;
+char *ARGV[];
