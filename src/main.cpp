@@ -1,8 +1,8 @@
+#include "doctor.hpp"
 #include "logger.hpp"
 #include "lutils.hpp"
 #include "parseargs.hpp"
 #include "update.hpp"
-#include "doctor.hpp"
 #include <deque>
 #include <iostream>
 #include <unistd.h>
@@ -10,14 +10,13 @@
 
 int main(int argc, char *argv[])
 {
-	std::vector<std::string> arguments(argv, argv + argc);
+	std::vector<std::string> arguments(argv + 1, argv + argc);
 	if (getuid() != 0)
 	{
 		log(LogLevel::WARN, "missing permissions. attempting to rerun as root...");
-		system(format("su -c \"{} {}\"", arguments[0], joinstr(arguments, " ")).c_str());
+		system(format("su -c \"{} {}\"", argv[0], joinstr(arguments, " ")).c_str());
 		exit(0);
 	}
-	arguments.erase(arguments.begin());
 	log(LogLevel::INFO, "luna - {}", VERS);
 	ParseArgs pa;
 	pa.addArgument("-u|--update|update", "updates the repos", &update::updateRepos);
