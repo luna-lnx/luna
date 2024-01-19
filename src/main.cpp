@@ -13,6 +13,10 @@ char **ARGV;
 
 int main(int argc, char *argv[])
 {
+	if (argc <= 1)
+	{
+		log(LogLevel::FATAL, "no arguments provided");
+	}
 	ARGC = argc;
 	ARGV = argv;
 	std::vector<std::string> arguments(argv + 1, argv + argc);
