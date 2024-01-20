@@ -20,7 +20,7 @@ class ParseArgs
     void addArgument(std::string names, std::string desc, bool *val);
     bool hasArgument(std::string arg);
     void checkUnrecognized(std::vector<std::string> argsin);
-    void parseArgs(std::vector<std::string> argsin);
+    bool parseArgs(std::vector<std::string> argsin);
 
   private:
     std::vector<Arg> arguments;

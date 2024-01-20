@@ -23,6 +23,6 @@ int main(int argc, char *argv[])
 	ParseArgs pa;
 	pa.addArgument("-u|--update|update", "updates the repos", &update::updateRepos);
 	pa.addArgument("-d|--doctor|doctor", "performs a lunapm health check", &doctor::runDoctor);
-	pa.parseArgs(arguments);
+	log(!pa.parseArgs(arguments), LogLevel::FATAL, "no argument matched");
 	return 0;
 }

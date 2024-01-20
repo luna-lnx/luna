@@ -47,7 +47,7 @@ void ParseArgs::checkUnrecognized(std::vector<std::string> argsin)
 		}
 	}
 }
-void ParseArgs::parseArgs(std::vector<std::string> argsin)
+bool ParseArgs::parseArgs(std::vector<std::string> argsin)
 {
 	for (int i = 0; i < arguments.size(); ++i)
 	{
@@ -73,8 +73,9 @@ void ParseArgs::parseArgs(std::vector<std::string> argsin)
 					bool *boolPtr = std::get<bool *>(arg.value);
 					*boolPtr = !(*boolPtr);
 				}
-				return;
+				return true;
 			}
 		}
 	}
+	return false;
 };
