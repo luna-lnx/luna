@@ -16,6 +16,11 @@ void runDoctor(std::vector<std::string> args)
 	privEsc();
 	Loader("running doctor", [](Loader &l) {
 		int issues = 0;
+		if(!std::filesystem::exists("/etc/luna/")){
+			++issues;
+			l.setProgress("creating /etc/luna/");
+			std::filesystem::create_directory("/etc/luna");
+		}
 		if (!std::filesystem::exists("/etc/luna/repos.conf"))
 		{
 			++issues;
