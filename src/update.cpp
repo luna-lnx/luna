@@ -15,12 +15,10 @@ namespace update
 void updateRepos(std::vector<std::string> args)
 {
 	ParseArgs pa;
-	std::string test;
-	pa.addArgument("test", "test", &test);
+	// TODO: Add support for string args with checkUnrecognized
 	//pa.checkUnrecognized(args);
 	pa.parseArgs(args);
 	privEsc();
-	log(LogLevel::INFO, "testing {}", test);
 	Loader ld("updating repos", [](Loader &l) {
 		std::ifstream reposListFile("/etc/luna/repos.conf");
 		if (reposListFile.is_open())

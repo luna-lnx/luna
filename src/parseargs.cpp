@@ -87,10 +87,9 @@ bool ParseArgs::parseArgs(std::vector<std::string> argsin)
 				else if (std::holds_alternative<std::string *>(arg.value))
 				{
 					std::string *stringPtr = std::get<std::string *>(arg.value);
-					log(LogLevel::INFO, "{}", *std::get<std::string *>(arguments.at(i).value));
-					stringPtr->assign(*std::get<std::string *>(arguments.at(i).value));
-					//stringPtr->assign("mrrow");
-					++i;
+					stringPtr->assign(argsin[0]);
+					argsin.erase(argsin.begin());
+					// stringPtr->assign("mrrow");
 				}
 				matched = true;
 				break;
