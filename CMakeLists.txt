@@ -15,5 +15,4 @@ add_executable(luna ${SOURCES})
 
 target_link_libraries(luna cpr)
 target_link_options(luna PRIVATE -s)
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Oz -flto")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")

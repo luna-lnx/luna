@@ -15,8 +15,12 @@ namespace update
 void updateRepos(std::vector<std::string> args)
 {
 	ParseArgs pa;
-	pa.checkUnrecognized(args);
+	std::string test;
+	pa.addArgument("test", "test", &test);
+	//pa.checkUnrecognized(args);
+	pa.parseArgs(args);
 	privEsc();
+	log(LogLevel::INFO, "testing {} {}", test);
 	Loader ld("updating repos", [](Loader &l) {
 		std::ifstream reposListFile("/etc/luna/repos.conf");
 		if (reposListFile.is_open())

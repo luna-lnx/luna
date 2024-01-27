@@ -17,11 +17,21 @@ Arg::Arg(std::string names, std::string desc, bool *val)
 	this->desc = desc;
 	this->value = val;
 }
+Arg::Arg(std::string names, std::string desc, std::string *val)
+{
+	this->names = names;
+	this->desc = desc;
+	this->value = val;
+}
 void ParseArgs::addArgument(std::string names, std::string desc, Arg::Func func)
 {
 	arguments.push_back(Arg(names, desc, func));
 }
 void ParseArgs::addArgument(std::string names, std::string desc, bool *val)
+{
+	arguments.push_back(Arg(names, desc, val));
+}
+void ParseArgs::addArgument(std::string names, std::string desc, std::string *val)
 {
 	arguments.push_back(Arg(names, desc, val));
 }
@@ -49,6 +59,7 @@ void ParseArgs::checkUnrecognized(std::vector<std::string> argsin)
 }
 bool ParseArgs::parseArgs(std::vector<std::string> argsin)
 {
+	bool matched = false;
 	for (int i = 0; i < arguments.size(); ++i)
 	{
 		Arg arg = arguments.at(i);
@@ -73,9 +84,19 @@ bool ParseArgs::parseArgs(std::vector<std::string> argsin)
 					bool *boolPtr = std::get<bool *>(arg.value);
 					*boolPtr = !(*boolPtr);
 				}
-				return true;
+				else if (std::holds_alternative<std::string *>(arg.value))
+				{
+					std::string *stringPtr = std::get<std::string *>(arg.value);
+					//stringPtr->assign(*std::get<std::string *>(arguments.at(i).value));
+					stringPtr->assign("mrrow");
+					++i;
+				}
+				matched = true;
+				break;
 			}
 		}
 	}
+	if (matched)
+		return true;
 	return false;
 };
