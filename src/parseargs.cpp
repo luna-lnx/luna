@@ -35,25 +35,32 @@ void ParseArgs::addArgument(std::string names, std::string desc, std::string *va
 {
 	arguments.push_back(Arg(names, desc, val));
 }
-bool ParseArgs::hasArgument(std::string arg)
+int ParseArgs::hasArgument(std::string arg)
 {
 	for (int i = 0; i < arguments.size(); ++i)
 	{
 		std::vector<std::string> indivargs = splitstr(arguments.at(i).names, "|");
 		if (std::find(indivargs.begin(), indivargs.end(), arg) != indivargs.end())
 		{
-			return true;
+			if(std::holds_alternative<std::string *>(arguments.at(i).value)){
+				return 2;
+			}
+			return 1;
 		}
 	}
-	return false;
+	return 0;
 }
 void ParseArgs::checkUnrecognized(std::vector<std::string> argsin)
 {
+	// TODO: Add support for string args with checkUnrecognized
 	for (int i = 0; i < argsin.size(); ++i)
 	{
-		if (!hasArgument(argsin.at(i)))
+		int hasArg = hasArgument(argsin.at(i));
+		if (!hasArg && hasArg != 2)
 		{
 			log(LogLevel::FATAL, "unrecognized argument {}", argsin.at(i));
+		}else if(hasArg == 2){
+			++i;
 		}
 	}
 }

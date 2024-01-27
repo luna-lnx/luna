@@ -15,8 +15,7 @@ namespace update
 void updateRepos(std::vector<std::string> args)
 {
 	ParseArgs pa;
-	// TODO: Add support for string args with checkUnrecognized
-	//pa.checkUnrecognized(args);
+	pa.checkUnrecognized(args);
 	pa.parseArgs(args);
 	privEsc();
 	Loader ld("updating repos", [](Loader &l) {
