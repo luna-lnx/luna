@@ -20,7 +20,7 @@ void updateRepos(std::vector<std::string> args)
 	//pa.checkUnrecognized(args);
 	pa.parseArgs(args);
 	privEsc();
-	log(LogLevel::INFO, "testing {} {}", test);
+	log(LogLevel::INFO, "testing {}", test);
 	Loader ld("updating repos", [](Loader &l) {
 		std::ifstream reposListFile("/etc/luna/repos.conf");
 		if (reposListFile.is_open())
