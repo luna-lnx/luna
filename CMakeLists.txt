@@ -18,3 +18,7 @@ add_executable(luna ${SOURCES})
 target_link_libraries(luna cpr)
 target_link_options(luna PRIVATE -s)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Oz -static")
+set_target_properties(luna PROPERTIES
+    LINK_SEARCH_START_STATIC 1
+    LINK_SEARCH_END_STATIC 1
+)
