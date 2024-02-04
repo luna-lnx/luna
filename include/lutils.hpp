@@ -1,8 +1,11 @@
 #pragma once
 
-#include <vector>
 #include <sstream>
+#include <stdint.h>
 #include <string>
+#include <vector>
+
+#define u_int8_t uint8_t
 
 std::vector<std::string> splitstr(std::string in, std::string del);
 std::string joinstr(std::vector<std::string> in, std::string delim);
