@@ -14,4 +14,4 @@ message(Sources ${SOURCES})
 add_executable(luna ${SOURCES})
 
 target_link_libraries(luna cpr)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Oz")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os -s")
