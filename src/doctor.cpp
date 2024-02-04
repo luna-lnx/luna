@@ -21,6 +21,11 @@ void runDoctor(std::vector<std::string> args)
 			l.setProgress("creating /etc/luna/");
 			std::filesystem::create_directory("/etc/luna");
 		}
+		if(!std::filesystem::exists("/var/lib/luna/repos.d/")){
+			++issues;
+			l.setProgress("creating /var/lib/luna/repos.d/");
+			std::filesystem::create_directories("/var/lib/luna/repos.d/");
+		}
 		if (!std::filesystem::exists("/etc/luna/repos.conf"))
 		{
 			++issues;
