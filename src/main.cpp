@@ -1,4 +1,5 @@
 #include "doctor.hpp"
+#include "install.hpp"
 #include "logger.hpp"
 #include "lutils.hpp"
 #include "parseargs.hpp"
@@ -21,8 +22,10 @@ int main(int argc, char *argv[])
 	ARGV = argv;
 	std::vector<std::string> arguments(argv + 1, argv + argc);
 	ParseArgs pa;
-	pa.addArgument("-u|--update|update", "updates the repos", &update::updateRepos);
+	pa.addArgument("-i|--install|install|-S", "installs a package", &install::installPackage, Arg::KEEP_ON_MATCH);
+	pa.addArgument("-u|--update|update|-y", "updates the repos", &update::updateRepos);
 	pa.addArgument("-d|--doctor|doctor", "performs a lunapm health check", &doctor::runDoctor);
+	pa.setFlags(ParseArgs::STOP_ON_MATCH);
 	log(!pa.parseArgs(arguments), LogLevel::FATAL, "no argument matched");
 	return 0;
 }

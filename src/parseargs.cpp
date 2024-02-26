@@ -5,35 +5,38 @@
 #include <optional>
 #include <string>
 
-Arg::Arg(std::string names, std::string desc, Func func)
+Arg::Arg(std::string names, std::string desc, Func func, int flags)
 {
 	this->names = names;
 	this->desc = desc;
+	this->flags = flags;
 	this->value = func;
 }
-Arg::Arg(std::string names, std::string desc, bool *val)
+Arg::Arg(std::string names, std::string desc, bool *val, int flags)
 {
 	this->names = names;
 	this->desc = desc;
+	this->flags = flags;
 	this->value = val;
 }
-Arg::Arg(std::string names, std::string desc, std::string *val)
+Arg::Arg(std::string names, std::string desc, std::string *val, int flags)
 {
 	this->names = names;
 	this->desc = desc;
+	this->flags = flags;
 	this->value = val;
 }
-void ParseArgs::addArgument(std::string names, std::string desc, Arg::Func func)
+void ParseArgs::addArgument(std::string names, std::string desc, Arg::Func func, int flags)
 {
-	arguments.push_back(Arg(names, desc, func));
+	arguments.push_back(Arg(names, desc, func, flags));
 }
-void ParseArgs::addArgument(std::string names, std::string desc, bool *val)
+void ParseArgs::addArgument(std::string names, std::string desc, bool *val, int flags)
 {
-	arguments.push_back(Arg(names, desc, val));
+	arguments.push_back(Arg(names, desc, val, flags));
 }
-void ParseArgs::addArgument(std::string names, std::string desc, std::string *val)
+void ParseArgs::addArgument(std::string names, std::string desc, std::string *val, int flags)
 {
-	arguments.push_back(Arg(names, desc, val));
+	arguments.push_back(Arg(names, desc, val, flags));
 }
 int ParseArgs::hasArgument(std::string arg)
 {
@@ -42,7 +45,8 @@ int ParseArgs::hasArgument(std::string arg)
 		std::vector<std::string> indivargs = splitstr(arguments.at(i).names, "|");
 		if (std::find(indivargs.begin(), indivargs.end(), arg) != indivargs.end())
 		{
-			if(std::holds_alternative<std::string *>(arguments.at(i).value)){
+			if (std::holds_alternative<std::string *>(arguments.at(i).value))
+			{
 				return 2;
 			}
 			return 1;
@@ -59,7 +63,9 @@ void ParseArgs::checkUnrecognized(std::vector<std::string> argsin)
 		if (!hasArg && hasArg != 2)
 		{
 			log(LogLevel::FATAL, "unrecognized argument {}", argsin.at(i));
-		}else if(hasArg == 2){
+		}
+		else if (hasArg == 2)
+		{
 			++i;
 		}
 	}
@@ -67,6 +73,10 @@ void ParseArgs::checkUnrecognized(std::vector<std::string> argsin)
 bool ParseArgs::parseArgs(std::vector<std::string> argsin)
 {
 	bool matched = false;
+	if (this->flags & ParseArgs::CHECK_UNRECOGNIZED)
+	{
+		checkUnrecognized(argsin);
+	}
 	for (int i = 0; i < arguments.size(); ++i)
 	{
 		Arg arg = arguments.at(i);
@@ -81,7 +91,10 @@ bool ParseArgs::parseArgs(std::vector<std::string> argsin)
 		{
 			if (argsin[0] == indivargs[j])
 			{
-				argsin.erase(argsin.begin());
+				if (!(arg.flags & Arg::KEEP_ON_MATCH))
+				{
+					argsin.erase(argsin.begin());
+				}
 				if (std::holds_alternative<Arg::Func>(arg.value))
 				{
 					std::get<Arg::Func>(arg.value)(argsin);
@@ -96,7 +109,10 @@ bool ParseArgs::parseArgs(std::vector<std::string> argsin)
 					std::string *stringPtr = std::get<std::string *>(arg.value);
 					stringPtr->assign(argsin[0]);
 					argsin.erase(argsin.begin());
-					// stringPtr->assign("mrrow");
+				}
+				if (this->flags & ParseArgs::STOP_ON_MATCH)
+				{
+					return true;
 				}
 				matched = true;
 				break;
@@ -107,3 +123,8 @@ bool ParseArgs::parseArgs(std::vector<std::string> argsin)
 		return true;
 	return false;
 };
+
+void ParseArgs::setFlags(int flags)
+{
+	this->flags = flags;
+}
