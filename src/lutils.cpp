@@ -24,7 +24,7 @@ std::vector<std::string> splitstr(const std::string in, const std::string del)
 	return out;
 }
 std::string joinstr(std::vector<std::string> in, std::string delim)
-{
+{ 
 	std::string out;
 	for (int i = 0; i < in.size(); ++i)
 	{

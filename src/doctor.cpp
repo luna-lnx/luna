@@ -1,8 +1,8 @@
 #include "cpr/cpr.h"
 #include "loader.hpp"
 #include "logger.hpp"
-#include "parseargs.hpp"
 #include "lutils.hpp"
+#include "parseargs.hpp"
 #include <filesystem>
 #include <iostream>
 #include <string>
@@ -16,12 +16,14 @@ void runDoctor(std::vector<std::string> args)
 	privEsc();
 	Loader("running doctor", [](Loader &l) {
 		int issues = 0;
-		if(!std::filesystem::exists("/etc/luna/")){
+		if (!std::filesystem::exists("/etc/luna/"))
+		{
 			++issues;
 			l.setProgress("creating /etc/luna/");
 			std::filesystem::create_directory("/etc/luna");
 		}
-		if(!std::filesystem::exists("/var/lib/luna/repos.d/")){
+		if (!std::filesystem::exists("/var/lib/luna/repos.d/"))
+		{
 			++issues;
 			l.setProgress("creating /var/lib/luna/repos.d/");
 			std::filesystem::create_directories("/var/lib/luna/repos.d/");
@@ -43,7 +45,8 @@ void runDoctor(std::vector<std::string> args)
 			reposConfOut << r.text;
 			reposConfOut.close();
 		}
-		log(issues > 0, LogLevel::INFO, "fixed {}{}{} issue(s)", color(255, 145, 145) + bold(), issues, colorTerminate());
+		log(issues > 0, LogLevel::INFO, "fixed {}{}{} issue(s)", color(255, 145, 145) + bold(), issues,
+			colorTerminate());
 		log(issues == 0, LogLevel::INFO, "found {}no{} issues (yay)", color(125, 255, 125) + bold(), colorTerminate());
 	});
 }
