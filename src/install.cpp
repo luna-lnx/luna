@@ -12,6 +12,7 @@ void installPackage(std::vector<std::string> args)
 	pa.addArgument("-i|--install|install|-S", "installs a package", &packagename);
 	pa.setFlags(ParseArgs::CHECK_UNRECOGNIZED);
 	pa.parseArgs(args);
+	privEsc();
 	log(LogLevel::DEBUG, packagename);
 }
 } // namespace install
