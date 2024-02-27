@@ -91,10 +91,7 @@ bool ParseArgs::parseArgs(std::vector<std::string> argsin)
 		{
 			if (argsin[0] == indivargs[j])
 			{
-				if (!(arg.flags & Arg::KEEP_ON_MATCH))
-				{
-					argsin.erase(argsin.begin());
-				}
+				argsin.erase(argsin.begin());
 				if (std::holds_alternative<Arg::Func>(arg.value))
 				{
 					std::get<Arg::Func>(arg.value)(argsin);
