@@ -1,5 +1,6 @@
 #include "doctor.hpp"
 #include "install.hpp"
+#include "liblpkg.hpp"
 #include "logger.hpp"
 #include "lutils.hpp"
 #include "parseargs.hpp"
@@ -21,6 +22,7 @@ int main(int argc, char *argv[])
 	ARGC = argc;
 	ARGV = argv;
 	std::vector<std::string> arguments(argv + 1, argv + argc);
+	liblpkg::parse_lpkg_from_file("/run/media/ech0/hentai/Projects/luna/samplepackage.lpkg");
 	ParseArgs pa;
 	pa.addArgument("-i|--install|install|-S", "installs a package", &install::installPackage, Arg::KEEP_ON_MATCH);
 	pa.addArgument("-u|--update|update|-y", "updates the repos", &update::updateRepos);
