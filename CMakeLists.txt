@@ -33,5 +33,5 @@ add_executable(luna ${SOURCES})
 target_link_libraries(luna PRIVATE cpr c++ c++abi)
 target_link_libraries(luna PRIVATE jerry-core jerry-port)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os -static")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -fsanitize=address")
 set(CMAKE_EXE_LINKER_FLAGS "-flto=full")
