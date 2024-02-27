@@ -7,6 +7,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include(FetchContent)
 
+set(BUILD_SHARED_LIBS OFF)
+set(OPENSSL_USE_STATIC_LIBS ON)
+set(ZLIB_USE_STATIC_LIBS ON)
 FetchContent_Declare(
     cpr
     GIT_REPOSITORY https://github.com/libcpr/cpr.git
@@ -27,7 +30,8 @@ file(GLOB SOURCES "src/*.cpp")
 message(Sources ${SOURCES})
 add_executable(luna ${SOURCES})
 
-target_link_libraries(luna cpr)
-target_link_libraries(luna jerry-core jerry-port)
+target_link_libraries(luna PRIVATE cpr c++ c++abi)
+target_link_libraries(luna PRIVATE jerry-core jerry-port)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g -fsanitize=address")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os -static")
+set(CMAKE_EXE_LINKER_FLAGS "-flto=full")
