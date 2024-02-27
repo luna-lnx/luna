@@ -1,19 +1,15 @@
-NAME="samplepackage"
-DISPLAYNAME="Sample Package"
-DESC="A sample package."
+var name = "samplepackage" // THIS SHOULD BE ALL LOWERCASE, NO SPACE
+var desc = "Sample Package. Not much to it."
+var version = "1.2.4"
+var deps = ["kati"]
+var tarball = `https://git.musl-libc.org/cgit/musl/snapshot/musl-${version}.tar.gz`
 
-VERSION="1.2.4"
-
-DEPENDENCIES=("ckati", "clang")
-
-# TODO: Git implementation
-TARBALL="https://git.musl-libc.org/cgit/musl/snapshot/musl-${VERSION}.tar.gz"
-
-build() {
-    cd "musl-${VERSION}"
-    ./configure
-    make
-}
-install(){
-    make install
-}
+var build = [
+    `cd musl-${version}`,
+    "chmod +x ./configure",
+    "CC=$CC CXX=$CXX CFLAGS=$CFLAGS LDFLAGS=$LDFLAGS ./configure",
+    "make $MKFLAGS"
+]
+var install = [
+    "make install DESTDIR=$DEST"
+]
