@@ -1,0 +1,19 @@
+NAME="samplepackage"
+DISPLAYNAME="Sample Package"
+DESC="A sample package."
+
+VERSION="1.2.4"
+
+DEPENDENCIES=("ckati", "clang")
+
+# TODO: Git implementation
+TARBALL="https://git.musl-libc.org/cgit/musl/snapshot/musl-${VERSION}.tar.gz"
+
+build() {
+    cd "musl-${VERSION}"
+    ./configure
+    make
+}
+install(){
+    make install
+}
