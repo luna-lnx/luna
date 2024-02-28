@@ -19,9 +19,10 @@ Lpkg parse_lpkg(std::string str)
 
 	jerry_value_t global_object = jerry_current_realm();
 	jerry_value_t test = jerry_object_get(global_object, jerry_string_sz("name"));
-	jerry_char_t buffer[jerry_string_size(test, JERRY_ENCODING_UTF8)];
-	jerry_string_to_buffer(test, JERRY_ENCODING_UTF8, buffer, jerry_string_size(test, JERRY_ENCODING_UTF8));
-	buffer[sizeof(buffer)] = '\0';
+	jerry_size_t bufsize = jerry_string_size(test, JERRY_ENCODING_UTF8);
+	jerry_char_t buffer[bufsize];
+	jerry_string_to_buffer(test, JERRY_ENCODING_UTF8, buffer, bufsize);
+	buffer[bufsize] = '\0';
 	log(LogLevel::DEBUG, "{}", buffer);
 	jerry_value_free(eval_ret);
 	jerry_value_free(test);
